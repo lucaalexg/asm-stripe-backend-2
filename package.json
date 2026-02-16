@@ -1,0 +1,9 @@
+{
+  "name": "asm-stripe-backend",
+  "private": true,
+  "dependencies": {
+    "stripe": "^16.0.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "cloudinary": "^1.41.0"
+  }
+}
