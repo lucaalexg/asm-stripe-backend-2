@@ -1,67 +1,110 @@
-const Stripe = require("stripe");
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-
-function getQueryParam(req, key) {
-  const base = "http://" + (req.headers.host || "localhost");
-  const url = new URL(req.url, base);
-  return url.searchParams.get(key);
-}
-
-function normalizeOrigin(value) {
-  if (!value) return null;
-  const v = String(value).trim().replace(/\/+$/, "");
-  if (!/^https?:\/\//i.test(v)) return null;
-  return v;
-}
+const {
+  getPublicOrigin,
+  getQueryParam,
+  getStripeClient,
+  getSupabaseAdmin,
+  isNoRowsError,
+  isValidEmail,
+  readJsonBody,
+  sendJson,
+  setCors,
+} = require("./_shared");
 
 module.exports = async (req, res) => {
-  // Optional: CORS fuer den Fall, dass du spaeter doch fetch nutzt
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  setCors(res);
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    res.statusCode = 204;
+    return res.end();
+  }
+
+  if (req.method !== "GET" && req.method !== "POST") {
+    return sendJson(res, 405, { error: "Method not allowed" });
   }
 
   try {
-    const origin = normalizeOrigin(process.env.PUBLIC_ORIGIN);
-    if (!origin) {
-      return res.status(500).json({ error: "PUBLIC_ORIGIN missing/invalid (must be https://...)" });
-    }
-
     let email = "";
+    let explicitOrigin = "";
 
     if (req.method === "GET") {
-      email = String(getQueryParam(req, "email") || "").trim();
-    } else if (req.method === "POST") {
-      const body = req.body || {};
-      email = String(body.email || "").trim();
+      email = String(getQueryParam(req, "email") || "").trim().toLowerCase();
+      explicitOrigin = String(getQueryParam(req, "origin") || "").trim();
     } else {
-      return res.status(405).json({ error: "Method not allowed" });
+      const body = await readJsonBody(req);
+      email = String(body.email || "").trim().toLowerCase();
+      explicitOrigin = String(body.origin || "").trim();
     }
 
-    if (!email) {
-      return res.status(400).json({ error: "Email required" });
+    if (!isValidEmail(email)) {
+      return sendJson(res, 400, { error: "A valid seller email is required." });
     }
 
-    const account = await stripe.accounts.create({
-      type: "express",
-      email,
-      capabilities: { transfers: { requested: true } }
-    });
+    const publicOrigin = getPublicOrigin(req, explicitOrigin);
+    if (!publicOrigin) {
+      return sendJson(res, 500, {
+        error: "PUBLIC_ORIGIN is missing or invalid. Expected https://your-domain.com",
+      });
+    }
 
-    const returnUrl = origin + "/pages/sell-with-us?state=return";
-    const refreshUrl = origin + "/pages/sell-with-us?state=refresh";
+    const stripe = getStripeClient();
+    const supabase = getSupabaseAdmin();
+
+    const sellerResult = await supabase
+      .from("seller_profiles")
+      .select("id, email, stripe_account_id")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (sellerResult.error && !isNoRowsError(sellerResult.error)) {
+      throw sellerResult.error;
+    }
+
+    let stripeAccountId = sellerResult.data ? sellerResult.data.stripe_account_id : null;
+
+    if (!stripeAccountId) {
+      const account = await stripe.accounts.create({
+        type: "express",
+        email,
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
+        },
+        metadata: {
+          platform: "archive-sur-mer",
+        },
+      });
+      stripeAccountId = account.id;
+    }
+
+    const upsertResult = await supabase
+      .from("seller_profiles")
+      .upsert(
+        {
+          email,
+          stripe_account_id: stripeAccountId,
+          onboarding_complete: false,
+        },
+        { onConflict: "email" }
+      )
+      .select("id, email, stripe_account_id, onboarding_complete")
+      .single();
+
+    if (upsertResult.error) {
+      throw upsertResult.error;
+    }
+
+    const returnUrl =
+      `${publicOrigin}/sell-with-us.html?state=return&email=` + encodeURIComponent(email);
+    const refreshUrl =
+      `${publicOrigin}/sell-with-us.html?state=refresh&email=` + encodeURIComponent(email);
 
     const accountLink = await stripe.accountLinks.create({
-      account: account.id,
+      account: stripeAccountId,
       type: "account_onboarding",
       return_url: returnUrl,
-      refresh_url: refreshUrl
+      refresh_url: refreshUrl,
     });
 
-    // Wichtig: Bei GET machen wir Redirect -> kein fetch, kein CORS
     if (req.method === "GET") {
       res.statusCode = 302;
       res.setHeader("Location", accountLink.url);
@@ -69,9 +112,14 @@ module.exports = async (req, res) => {
       return res.end();
     }
 
-    // Bei POST geben wir JSON zurueck (falls du es doch brauchst)
-    return res.status(200).json({ url: accountLink.url, stripe_account_id: account.id });
-  } catch (err) {
-    return res.status(500).json({ error: err && err.message ? err.message : "Server error" });
+    return sendJson(res, 200, {
+      url: accountLink.url,
+      stripe_account_id: stripeAccountId,
+      seller: upsertResult.data,
+    });
+  } catch (error) {
+    return sendJson(res, 500, {
+      error: error && error.message ? error.message : "Server error",
+    });
   }
 };
