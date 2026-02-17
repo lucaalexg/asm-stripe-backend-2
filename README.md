@@ -5,6 +5,7 @@ Vestiaire-inspired marketplace backend + frontend for selling new and pre-owned 
 This repository now includes:
 
 - Stripe Connect Express onboarding for sellers
+- Customer registration endpoint (email + phone)
 - Supabase-powered listings catalog
 - Listing moderation workflow (pending/approved/rejected)
 - Multi-image + video listing media support
@@ -43,6 +44,7 @@ Run `supabase-schema.sql` in Supabase SQL editor before using the API.
 
 Tables created:
 
+- `customer_profiles`
 - `seller_profiles`
 - `listings`
 
@@ -76,6 +78,19 @@ Returns onboarding state for a seller profile.
   - optional seller view params: `seller_email`, `moderation_status`
 - `POST`: create listing (saved as `pending` moderation by default)
 - `PATCH`: seller status update (`active` or `archived`)
+
+### `POST /api/customer-signup`
+
+Registers or updates a customer profile by email:
+
+```json
+{
+  "email": "buyer@example.com",
+  "phone": "+491751234567",
+  "fullName": "Buyer Name",
+  "marketingOptIn": true
+}
+```
 
 ### `GET|POST /api/moderate-listings`
 
@@ -122,7 +137,7 @@ Uploads image to Cloudinary:
 
 ## 4) Frontend routes
 
-- `/` -> buyer marketplace page with filters + direct Stripe Checkout
+- `/` -> buyer marketplace page (customer registration + filters + direct Stripe Checkout)
 - `/sell-with-us.html` -> seller onboarding, rich-media submission, and submission status tracking
 - `/admin-review.html` -> approve/decline queue for your moderation team
 

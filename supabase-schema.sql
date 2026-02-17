@@ -22,6 +22,25 @@ create table if not exists public.seller_profiles (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.customer_profiles (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  phone text not null,
+  full_name text,
+  marketing_opt_in boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table if exists public.customer_profiles
+  add column if not exists phone text;
+
+alter table if exists public.customer_profiles
+  add column if not exists full_name text;
+
+alter table if exists public.customer_profiles
+  add column if not exists marketing_opt_in boolean not null default false;
+
 create table if not exists public.listings (
   id uuid primary key default gen_random_uuid(),
   seller_id uuid not null references public.seller_profiles(id) on delete cascade,
@@ -102,9 +121,20 @@ create index if not exists idx_listings_seller
 create index if not exists idx_listings_moderation_status
   on public.listings (moderation_status, created_at desc);
 
+create index if not exists idx_customer_profiles_email
+  on public.customer_profiles (email);
+
+create index if not exists idx_customer_profiles_phone
+  on public.customer_profiles (phone);
+
 drop trigger if exists trg_seller_profiles_updated_at on public.seller_profiles;
 create trigger trg_seller_profiles_updated_at
 before update on public.seller_profiles
+for each row execute function public.set_updated_at();
+
+drop trigger if exists trg_customer_profiles_updated_at on public.customer_profiles;
+create trigger trg_customer_profiles_updated_at
+before update on public.customer_profiles
 for each row execute function public.set_updated_at();
 
 drop trigger if exists trg_listings_updated_at on public.listings;

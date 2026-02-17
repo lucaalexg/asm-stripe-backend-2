@@ -2,6 +2,7 @@
   const API = {
     accountStatus: "/api/account-status",
     checkout: "/api/create-checkout-session",
+    customerSignup: "/api/customer-signup",
     listings: "/api/listings",
     moderation: "/api/moderate-listings",
     onboarding: "/api/start-onboarding",
@@ -274,6 +275,12 @@
   }
 
   function initMarketplacePage() {
+    const customerSignupForm = $("customer-signup-form");
+    const customerSignupStatus = $("customer-signup-status");
+    const customerName = $("customer-name");
+    const customerEmail = $("customer-email");
+    const customerPhone = $("customer-phone");
+    const customerMarketing = $("customer-marketing");
     const searchInput = $("search");
     const conditionSelect = $("condition");
     const refreshButton = $("refresh");
@@ -344,6 +351,51 @@
       loadListings();
     });
     refreshButton.addEventListener("click", loadListings);
+
+    if (
+      customerSignupForm &&
+      customerSignupStatus &&
+      customerEmail &&
+      customerPhone &&
+      customerMarketing
+    ) {
+      customerSignupForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const submitButton = customerSignupForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        setStatus(customerSignupStatus, "Creating your customer account...", "");
+
+        try {
+          const payload = {
+            fullName: customerName ? customerName.value.trim() : "",
+            email: customerEmail.value.trim(),
+            phone: customerPhone.value.trim(),
+            marketingOptIn: customerMarketing.checked,
+          };
+          const data = await requestJson(API.customerSignup, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          setStatus(
+            customerSignupStatus,
+            data.created
+              ? "Account created. You can now browse and buy designer pieces."
+              : "Profile updated. You are ready to shop.",
+            "ok"
+          );
+        } catch (error) {
+          setStatus(
+            customerSignupStatus,
+            error.message || "Could not create customer account.",
+            "error"
+          );
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+    }
 
     loadListings();
   }

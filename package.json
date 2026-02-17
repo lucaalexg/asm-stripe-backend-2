@@ -2,7 +2,7 @@
   "name": "asm-stripe-backend",
   "private": true,
   "scripts": {
-    "check": "node --check api/_shared.js && node --check api/start-onboarding.js && node --check api/account-status.js && node --check api/listings.js && node --check api/create-checkout-session.js && node --check api/stripe-webhook.js && node --check api/upload-image.js && node --check api/moderate-listings.js && node --check api/return.js && node --check marketplace.js"
+    "check": "node --check api/_shared.js && node --check api/start-onboarding.js && node --check api/account-status.js && node --check api/listings.js && node --check api/create-checkout-session.js && node --check api/stripe-webhook.js && node --check api/upload-image.js && node --check api/moderate-listings.js && node --check api/customer-signup.js && node --check api/return.js && node --check marketplace.js"
   },
   "dependencies": {
     "stripe": "^16.0.0",
