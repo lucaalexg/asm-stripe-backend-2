@@ -6,7 +6,10 @@
     listings: "/api/listings",
     moderation: "/api/moderate-listings",
     onboarding: "/api/start-onboarding",
+    offers: "/api/offers",
+    savedSearches: "/api/saved-searches",
     uploadImage: "/api/upload-image",
+    wishlist: "/api/wishlist",
   };
 
   function $(id) {
@@ -52,6 +55,20 @@
         }
       });
     return urls;
+  }
+
+  function normalizeEmail(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function offerStatusLabel(status) {
+    const key = String(status || "").toLowerCase();
+    if (key === "countered") return "Counter offer";
+    if (key === "accepted") return "Accepted";
+    if (key === "rejected") return "Rejected";
+    if (key === "cancelled") return "Cancelled";
+    if (key === "expired") return "Expired";
+    return "Pending";
   }
 
   function normalizeMediaUrls(value) {
@@ -138,7 +155,7 @@
     };
   }
 
-  async function startCheckout(listingId, button, statusEl) {
+  async function startCheckout(listingId, button, statusEl, buyerEmail = "") {
     button.disabled = true;
     setStatus(statusEl, "Creating secure checkout...", "");
 
@@ -149,6 +166,7 @@
         body: JSON.stringify({
           listingId,
           origin: window.location.origin,
+          buyerEmail: normalizeEmail(buyerEmail),
         }),
       });
 
@@ -214,7 +232,20 @@
         <p class="listing-price">${price}</p>
         ${videoLink}
         ${thumbs}
-        <button class="button buy-button" data-action="buy" data-listing-id="${escapeHtml(listing.id)}">Buy now</button>
+        <div class="listing-actions">
+          <button class="button buy-button" data-action="buy" data-listing-id="${escapeHtml(listing.id)}">Buy now</button>
+          <div class="button-row">
+            <button class="button button--ghost buy-button" data-action="save" data-listing-id="${escapeHtml(
+              listing.id
+            )}">Save item</button>
+          </div>
+          <div class="offer-row">
+            <input type="number" min="1" step="1" placeholder="Offer €" data-offer-input />
+            <button class="button button--ghost" data-action="offer" data-listing-id="${escapeHtml(
+              listing.id
+            )}">Offer</button>
+          </div>
+        </div>
       </div>
     </article>`;
   }
@@ -281,19 +312,57 @@
     const customerEmail = $("customer-email");
     const customerPhone = $("customer-phone");
     const customerMarketing = $("customer-marketing");
+    const customerContextForm = $("customer-context-form");
+    const customerContextEmail = $("customer-context-email");
+    const customerContextStatus = $("customer-context-status");
+    const refreshMemberDataButton = $("refresh-member-data");
+    const wishlistItems = $("wishlist-items");
+    const offerItems = $("offer-items");
+    const savedSearchItems = $("saved-search-items");
     const searchInput = $("search");
+    const brandInput = $("brand");
+    const sizeInput = $("size-filter");
     const conditionSelect = $("condition");
+    const minPriceInput = $("min-price");
+    const maxPriceInput = $("max-price");
+    const sortSelect = $("sort");
+    const saveSearchButton = $("save-search");
     const refreshButton = $("refresh");
     const grid = $("listing-grid");
     const status = $("listing-status");
 
-    if (!searchInput || !conditionSelect || !refreshButton || !grid || !status) return;
+    if (
+      !searchInput ||
+      !brandInput ||
+      !sizeInput ||
+      !conditionSelect ||
+      !minPriceInput ||
+      !maxPriceInput ||
+      !sortSelect ||
+      !saveSearchButton ||
+      !refreshButton ||
+      !grid ||
+      !status
+    ) {
+      return;
+    }
 
+    const memberStorageKey = "asm_customer_email";
     const state = {
       search: "",
+      brand: "",
+      size: "",
       condition: "all",
+      minPrice: "",
+      maxPrice: "",
+      sort: "newest",
+      customerEmail: normalizeEmail(window.localStorage.getItem(memberStorageKey) || ""),
       loading: false,
     };
+
+    if (customerContextEmail) {
+      customerContextEmail.value = state.customerEmail;
+    }
 
     const params = new URLSearchParams(window.location.search);
     const checkoutState = params.get("checkout");
@@ -301,6 +370,206 @@
       setStatus(status, "Payment completed. Your order is confirmed.", "ok");
     } else if (checkoutState === "cancelled") {
       setStatus(status, "Checkout cancelled. Listing is still available.", "");
+    }
+
+    function refreshStateFromInputs() {
+      state.search = searchInput.value.trim();
+      state.brand = brandInput.value.trim();
+      state.size = sizeInput.value.trim();
+      state.condition = conditionSelect.value;
+      state.minPrice = minPriceInput.value.trim();
+      state.maxPrice = maxPriceInput.value.trim();
+      state.sort = sortSelect.value || "newest";
+    }
+
+    function applyStateToInputs() {
+      searchInput.value = state.search;
+      brandInput.value = state.brand;
+      sizeInput.value = state.size;
+      conditionSelect.value = state.condition;
+      minPriceInput.value = state.minPrice;
+      maxPriceInput.value = state.maxPrice;
+      sortSelect.value = state.sort;
+      if (customerContextEmail) {
+        customerContextEmail.value = state.customerEmail;
+      }
+    }
+
+    function requireCustomerEmail() {
+      const value = normalizeEmail(
+        customerContextEmail && customerContextEmail.value
+          ? customerContextEmail.value
+          : state.customerEmail
+      );
+      if (!value) {
+        setStatus(
+          customerContextStatus,
+          "Connect your customer email first to use wishlist, offers, and saved searches.",
+          "error"
+        );
+        return "";
+      }
+      state.customerEmail = value;
+      window.localStorage.setItem(memberStorageKey, value);
+      if (customerContextEmail) customerContextEmail.value = value;
+      return value;
+    }
+
+    function renderWishlist(items) {
+      if (!wishlistItems) return;
+      if (!state.customerEmail) {
+        wishlistItems.innerHTML = `<div class="member-item"><p>Connect your account to see wishlist.</p></div>`;
+        return;
+      }
+      if (!items || items.length === 0) {
+        wishlistItems.innerHTML = `<div class="member-item"><p>No saved items yet.</p></div>`;
+        return;
+      }
+      wishlistItems.innerHTML = items
+        .map((item) => {
+          const listing = item.listing || null;
+          if (!listing) {
+            return `<article class="member-item"><p>This listing is no longer available.</p></article>`;
+          }
+          return `<article class="member-item">
+            <p><strong>${escapeHtml(listing.brand)} ${escapeHtml(listing.title)}</strong></p>
+            <p>${formatCurrency(listing.price_cents, listing.currency)} • ${escapeHtml(
+              listing.condition || "Condition N/A"
+            )}</p>
+            <div class="button-row">
+              <button class="button button--ghost" data-wishlist-buy="${escapeHtml(
+                listing.id
+              )}">Buy</button>
+              <button class="button button--ghost" data-wishlist-remove="${escapeHtml(
+                listing.id
+              )}">Remove</button>
+            </div>
+          </article>`;
+        })
+        .join("");
+    }
+
+    function renderOffers(items) {
+      if (!offerItems) return;
+      if (!state.customerEmail) {
+        offerItems.innerHTML = `<div class="member-item"><p>Connect your account to track offers.</p></div>`;
+        return;
+      }
+      if (!items || items.length === 0) {
+        offerItems.innerHTML = `<div class="member-item"><p>No offers yet.</p></div>`;
+        return;
+      }
+      offerItems.innerHTML = items
+        .map((offer) => {
+          const listing = offer.listing || {};
+          const counterAction =
+            offer.status === "countered"
+              ? `<button class="button button--ghost" data-offer-action="accept_counter" data-offer-id="${escapeHtml(
+                  offer.id
+                )}">Accept counter</button>`
+              : "";
+          const cancelAction =
+            offer.status === "pending" || offer.status === "countered"
+              ? `<button class="button button--ghost" data-offer-action="cancel" data-offer-id="${escapeHtml(
+                  offer.id
+                )}">Cancel</button>`
+              : "";
+          return `<article class="member-item">
+            <p><strong>${escapeHtml(listing.brand || "")} ${escapeHtml(listing.title || "Listing")}</strong></p>
+            <p>Status: ${escapeHtml(offerStatusLabel(offer.status))} • Offer ${formatCurrency(
+              offer.amount_cents,
+              offer.currency
+            )}</p>
+            ${
+              offer.counter_amount_cents
+                ? `<p>Counter: ${formatCurrency(offer.counter_amount_cents, offer.currency)}</p>`
+                : ""
+            }
+            <div class="button-row">${counterAction}${cancelAction}</div>
+          </article>`;
+        })
+        .join("");
+    }
+
+    function renderSavedSearches(items) {
+      if (!savedSearchItems) return;
+      if (!state.customerEmail) {
+        savedSearchItems.innerHTML = `<div class="member-item"><p>Connect your account to use saved searches.</p></div>`;
+        return;
+      }
+      if (!items || items.length === 0) {
+        savedSearchItems.innerHTML = `<div class="member-item"><p>No saved searches yet.</p></div>`;
+        return;
+      }
+      savedSearchItems.innerHTML = items
+        .map((item) => {
+          const parts = [];
+          if (item.search_query) parts.push(`"${escapeHtml(item.search_query)}"`);
+          if (item.brand) parts.push(`Brand: ${escapeHtml(item.brand)}`);
+          if (item.size) parts.push(`Size: ${escapeHtml(item.size)}`);
+          if (item.condition) parts.push(`Condition: ${escapeHtml(item.condition)}`);
+          if (item.min_price !== null) parts.push(`Min: €${escapeHtml(item.min_price)}`);
+          if (item.max_price !== null) parts.push(`Max: €${escapeHtml(item.max_price)}`);
+
+          return `<article class="member-item">
+            <p><strong>Search preset</strong></p>
+            <p>${parts.join(" • ") || "Custom search"}</p>
+            <div class="button-row">
+              <button class="button button--ghost" data-saved-search-apply='${encodeURIComponent(
+                JSON.stringify(item)
+              )}'>Apply</button>
+              <button class="button button--ghost" data-saved-search-remove="${escapeHtml(
+                item.id
+              )}">Delete</button>
+            </div>
+          </article>`;
+        })
+        .join("");
+    }
+
+    async function loadWishlist() {
+      if (!state.customerEmail) {
+        renderWishlist([]);
+        return;
+      }
+      const data = await requestJson(
+        `${API.wishlist}?customer_email=${encodeURIComponent(state.customerEmail)}`
+      );
+      renderWishlist(data.items || []);
+    }
+
+    async function loadOffers() {
+      if (!state.customerEmail) {
+        renderOffers([]);
+        return;
+      }
+      const data = await requestJson(
+        `${API.offers}?customer_email=${encodeURIComponent(state.customerEmail)}&limit=30`
+      );
+      renderOffers(data.offers || []);
+    }
+
+    async function loadSavedSearches() {
+      if (!state.customerEmail) {
+        renderSavedSearches([]);
+        return;
+      }
+      const data = await requestJson(
+        `${API.savedSearches}?customer_email=${encodeURIComponent(state.customerEmail)}&limit=30`
+      );
+      renderSavedSearches(data.searches || []);
+    }
+
+    async function refreshMemberData() {
+      try {
+        await Promise.all([loadWishlist(), loadOffers(), loadSavedSearches()]);
+      } catch (error) {
+        setStatus(
+          customerContextStatus,
+          error.message || "Could not load member data right now.",
+          "error"
+        );
+      }
     }
 
     async function loadListings() {
@@ -311,7 +580,12 @@
       query.set("status", "active");
       query.set("limit", "30");
       if (state.search) query.set("search", state.search);
+      if (state.brand) query.set("brand", state.brand);
+      if (state.size) query.set("size", state.size);
       if (state.condition && state.condition !== "all") query.set("condition", state.condition);
+      if (state.minPrice) query.set("min_price", state.minPrice);
+      if (state.maxPrice) query.set("max_price", state.maxPrice);
+      if (state.sort) query.set("sort", state.sort);
 
       setStatus(status, "Loading curated listings...", "");
 
@@ -326,11 +600,6 @@
           grid.innerHTML = listings.map(listingCardTemplate).join("");
           wireListingCardMedia(grid);
           setStatus(status, `${listings.length} listings`, "");
-          grid.querySelectorAll('[data-action="buy"]').forEach((button) => {
-            button.addEventListener("click", () =>
-              startCheckout(button.dataset.listingId, button, status)
-            );
-          });
         }
       } catch (error) {
         grid.innerHTML = "";
@@ -341,16 +610,27 @@
     }
 
     const debouncedLoad = debounce(() => {
-      state.search = searchInput.value.trim();
+      refreshStateFromInputs();
       loadListings();
     }, 280);
 
     searchInput.addEventListener("input", debouncedLoad);
+    brandInput.addEventListener("input", debouncedLoad);
+    sizeInput.addEventListener("input", debouncedLoad);
+    minPriceInput.addEventListener("input", debouncedLoad);
+    maxPriceInput.addEventListener("input", debouncedLoad);
     conditionSelect.addEventListener("change", () => {
-      state.condition = conditionSelect.value;
+      refreshStateFromInputs();
       loadListings();
     });
-    refreshButton.addEventListener("click", loadListings);
+    sortSelect.addEventListener("change", () => {
+      refreshStateFromInputs();
+      loadListings();
+    });
+    refreshButton.addEventListener("click", () => {
+      refreshStateFromInputs();
+      loadListings();
+    });
 
     if (
       customerSignupForm &&
@@ -378,6 +658,13 @@
             body: JSON.stringify(payload),
           });
 
+          if (customerContextEmail && customerEmail.value.trim()) {
+            state.customerEmail = normalizeEmail(customerEmail.value);
+            customerContextEmail.value = state.customerEmail;
+            window.localStorage.setItem(memberStorageKey, state.customerEmail);
+            refreshMemberData();
+          }
+
           setStatus(
             customerSignupStatus,
             data.created
@@ -397,7 +684,250 @@
       });
     }
 
+    if (customerContextForm && customerContextEmail) {
+      customerContextForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const email = normalizeEmail(customerContextEmail.value);
+        if (!email) {
+          setStatus(customerContextStatus, "Enter a customer email first.", "error");
+          return;
+        }
+        state.customerEmail = email;
+        window.localStorage.setItem(memberStorageKey, email);
+        setStatus(customerContextStatus, "Account connected.", "ok");
+        refreshMemberData();
+      });
+    }
+
+    if (refreshMemberDataButton) {
+      refreshMemberDataButton.addEventListener("click", () => {
+        const email = requireCustomerEmail();
+        if (!email) return;
+        refreshMemberData();
+      });
+    }
+
+    if (saveSearchButton) {
+      saveSearchButton.addEventListener("click", async () => {
+        const email = requireCustomerEmail();
+        if (!email) return;
+        refreshStateFromInputs();
+
+        try {
+          await requestJson(API.savedSearches, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              customerEmail: email,
+              search: state.search,
+              brand: state.brand,
+              size: state.size,
+              condition: state.condition === "all" ? "" : state.condition,
+              min_price: state.minPrice || null,
+              max_price: state.maxPrice || null,
+              sort: state.sort,
+            }),
+          });
+          setStatus(customerContextStatus, "Search saved to your account.", "ok");
+          await loadSavedSearches();
+        } catch (error) {
+          setStatus(customerContextStatus, error.message || "Could not save search.", "error");
+        }
+      });
+    }
+
+    grid.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+
+      const action = button.getAttribute("data-action");
+      const listingId = button.getAttribute("data-listing-id");
+      if (!listingId) return;
+
+      if (action === "buy") {
+        startCheckout(listingId, button, status, state.customerEmail);
+        return;
+      }
+
+      if (action === "save") {
+        const email = requireCustomerEmail();
+        if (!email) return;
+        button.disabled = true;
+        try {
+          await requestJson(API.wishlist, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              customerEmail: email,
+              listingId,
+            }),
+          });
+          setStatus(customerContextStatus, "Item saved to wishlist.", "ok");
+          await loadWishlist();
+        } catch (error) {
+          setStatus(customerContextStatus, error.message || "Could not save item.", "error");
+        } finally {
+          button.disabled = false;
+        }
+        return;
+      }
+
+      if (action === "offer") {
+        const email = requireCustomerEmail();
+        if (!email) return;
+        const row = button.closest(".offer-row");
+        const input = row ? row.querySelector("[data-offer-input]") : null;
+        const amount = input ? input.value.trim() : "";
+        if (!amount) {
+          setStatus(customerContextStatus, "Enter an offer amount first.", "error");
+          return;
+        }
+        button.disabled = true;
+        try {
+          await requestJson(API.offers, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              customerEmail: email,
+              listingId,
+              amount,
+            }),
+          });
+          if (input) input.value = "";
+          setStatus(customerContextStatus, "Offer submitted to seller.", "ok");
+          await loadOffers();
+        } catch (error) {
+          setStatus(customerContextStatus, error.message || "Could not submit offer.", "error");
+        } finally {
+          button.disabled = false;
+        }
+      }
+    });
+
+    if (wishlistItems) {
+      wishlistItems.addEventListener("click", async (event) => {
+        const removeButton = event.target.closest("[data-wishlist-remove]");
+        const buyButton = event.target.closest("[data-wishlist-buy]");
+
+        if (buyButton) {
+          startCheckout(
+            buyButton.getAttribute("data-wishlist-buy"),
+            buyButton,
+            status,
+            state.customerEmail
+          );
+          return;
+        }
+
+        if (removeButton) {
+          const email = requireCustomerEmail();
+          if (!email) return;
+          const listingId = removeButton.getAttribute("data-wishlist-remove");
+          removeButton.disabled = true;
+          try {
+            await requestJson(API.wishlist, {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                customerEmail: email,
+                listingId,
+              }),
+            });
+            setStatus(customerContextStatus, "Item removed from wishlist.", "ok");
+            await loadWishlist();
+          } catch (error) {
+            setStatus(customerContextStatus, error.message || "Could not remove wishlist item.", "error");
+          } finally {
+            removeButton.disabled = false;
+          }
+        }
+      });
+    }
+
+    if (offerItems) {
+      offerItems.addEventListener("click", async (event) => {
+        const actionButton = event.target.closest("[data-offer-action]");
+        if (!actionButton) return;
+        const email = requireCustomerEmail();
+        if (!email) return;
+        const action = actionButton.getAttribute("data-offer-action");
+        const offerId = actionButton.getAttribute("data-offer-id");
+
+        actionButton.disabled = true;
+        try {
+          await requestJson(API.offers, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              offerId,
+              action,
+              customerEmail: email,
+            }),
+          });
+          setStatus(customerContextStatus, "Offer updated.", "ok");
+          await loadOffers();
+        } catch (error) {
+          setStatus(customerContextStatus, error.message || "Could not update offer.", "error");
+        } finally {
+          actionButton.disabled = false;
+        }
+      });
+    }
+
+    if (savedSearchItems) {
+      savedSearchItems.addEventListener("click", async (event) => {
+        const applyButton = event.target.closest("[data-saved-search-apply]");
+        const deleteButton = event.target.closest("[data-saved-search-remove]");
+
+        if (applyButton) {
+          try {
+            const payload = JSON.parse(
+              decodeURIComponent(applyButton.getAttribute("data-saved-search-apply"))
+            );
+            state.search = payload.search_query || "";
+            state.brand = payload.brand || "";
+            state.size = payload.size || "";
+            state.condition = payload.condition || "all";
+            state.minPrice = payload.min_price === null || payload.min_price === undefined ? "" : String(payload.min_price);
+            state.maxPrice = payload.max_price === null || payload.max_price === undefined ? "" : String(payload.max_price);
+            state.sort = payload.sort_key || "newest";
+            applyStateToInputs();
+            loadListings();
+            setStatus(customerContextStatus, "Saved search applied.", "ok");
+          } catch (_error) {
+            setStatus(customerContextStatus, "Could not apply saved search.", "error");
+          }
+          return;
+        }
+
+        if (deleteButton) {
+          const email = requireCustomerEmail();
+          if (!email) return;
+          const savedSearchId = deleteButton.getAttribute("data-saved-search-remove");
+          deleteButton.disabled = true;
+          try {
+            await requestJson(API.savedSearches, {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                customerEmail: email,
+                savedSearchId,
+              }),
+            });
+            setStatus(customerContextStatus, "Saved search deleted.", "ok");
+            await loadSavedSearches();
+          } catch (error) {
+            setStatus(customerContextStatus, error.message || "Could not delete saved search.", "error");
+          } finally {
+            deleteButton.disabled = false;
+          }
+        }
+      });
+    }
+
+    applyStateToInputs();
     loadListings();
+    refreshMemberData();
   }
 
   function fileToDataUrl(file) {
@@ -451,6 +981,69 @@
       .join("");
   }
 
+  function renderSellerOfferSummary(offers, container) {
+    if (!container) return;
+    if (!Array.isArray(offers) || offers.length === 0) {
+      container.innerHTML = `<div class="submission-item">No offers yet.</div>`;
+      return;
+    }
+
+    container.innerHTML = offers
+      .map((offer) => {
+        const listing = offer.listing || {};
+        const canAct = offer.status === "pending" || offer.status === "countered";
+        const counterValue =
+          offer.counter_amount_cents && Number.isFinite(offer.counter_amount_cents)
+            ? String((offer.counter_amount_cents / 100).toFixed(2))
+            : "";
+        return `<article class="submission-item" data-seller-offer-id="${escapeHtml(offer.id)}">
+          <div class="submission-head">
+            <div>
+              <h3>${escapeHtml(listing.brand || "")} ${escapeHtml(listing.title || "Listing")}</h3>
+              <p class="submission-meta">
+                Offer ${formatCurrency(offer.amount_cents, offer.currency)} • ${escapeHtml(
+                  offerStatusLabel(offer.status)
+                )} • Buyer ${escapeHtml(offer.customer_email || "Unknown")}
+              </p>
+            </div>
+            <span class="moderation-badge ${offer.status === "accepted" ? "moderation-badge--approved" : offer.status === "rejected" || offer.status === "cancelled" ? "moderation-badge--rejected" : "moderation-badge--pending"}">${escapeHtml(
+              offerStatusLabel(offer.status)
+            )}</span>
+          </div>
+          ${
+            offer.buyer_message
+              ? `<p class="submission-meta"><strong>Buyer note:</strong> ${escapeHtml(
+                  offer.buyer_message
+                )}</p>`
+              : ""
+          }
+          ${
+            offer.seller_message
+              ? `<p class="submission-meta"><strong>Seller note:</strong> ${escapeHtml(
+                  offer.seller_message
+                )}</p>`
+              : ""
+          }
+          ${
+            canAct
+              ? `<div class="admin-actions">
+                  <input type="number" min="1" step="0.01" placeholder="Counter amount (EUR)" value="${escapeHtml(
+                    counterValue
+                  )}" data-seller-counter-amount />
+                  <textarea placeholder="Optional message to buyer" data-seller-offer-message></textarea>
+                  <div class="button-row">
+                    <button type="button" class="button button--ghost" data-seller-offer-action="accept">Accept</button>
+                    <button type="button" class="button button--ghost" data-seller-offer-action="reject">Reject</button>
+                    <button type="button" class="button" data-seller-offer-action="counter">Counter</button>
+                  </div>
+                </div>`
+              : ""
+          }
+        </article>`;
+      })
+      .join("");
+  }
+
   function initSellerPage() {
     const onboardingForm = $("onboarding-form");
     const checkStatusButton = $("check-status");
@@ -465,6 +1058,8 @@
     const mediaPreview = $("media-preview");
     const refreshMyListings = $("refresh-my-listings");
     const myListings = $("my-listings");
+    const refreshSellerOffers = $("refresh-seller-offers");
+    const sellerOffers = $("seller-offers");
 
     if (
       !onboardingForm ||
@@ -517,6 +1112,7 @@
           );
         }
         await loadSellerListings();
+        await loadSellerOffers();
         return data;
       } catch (error) {
         setStatus(onboardingState, error.message || "Status check failed.", "error");
@@ -546,6 +1142,24 @@
       }
     }
 
+    async function loadSellerOffers() {
+      const email = sellerEmail.value.trim().toLowerCase();
+      if (!email || !sellerOffers) return;
+
+      sellerOffers.innerHTML = `<div class="submission-item">Loading offers...</div>`;
+
+      try {
+        const data = await requestJson(
+          `${API.offers}?seller_email=${encodeURIComponent(email)}&limit=40`
+        );
+        renderSellerOfferSummary(data.offers || [], sellerOffers);
+      } catch (error) {
+        sellerOffers.innerHTML = `<div class="submission-item">${escapeHtml(
+          error.message || "Could not load offers."
+        )}</div>`;
+      }
+    }
+
     onboardingForm.addEventListener("submit", (event) => {
       event.preventDefault();
       const email = sellerEmail.value.trim().toLowerCase();
@@ -567,6 +1181,12 @@
     if (refreshMyListings) {
       refreshMyListings.addEventListener("click", () => {
         loadSellerListings();
+      });
+    }
+
+    if (refreshSellerOffers) {
+      refreshSellerOffers.addEventListener("click", () => {
+        loadSellerOffers();
       });
     }
 
@@ -679,6 +1299,7 @@
         }
         renderMediaPreview(mediaPreview, []);
         await loadSellerListings();
+        await loadSellerOffers();
       } catch (error) {
         setStatus(listingState, error.message || "Could not publish listing.", "error");
       } finally {
@@ -686,8 +1307,53 @@
       }
     });
 
+    if (sellerOffers) {
+      sellerOffers.addEventListener("click", async (event) => {
+        const actionButton = event.target.closest("[data-seller-offer-action]");
+        if (!actionButton) return;
+
+        const offerCard = actionButton.closest("[data-seller-offer-id]");
+        if (!offerCard) return;
+
+        const action = actionButton.getAttribute("data-seller-offer-action");
+        const offerId = offerCard.getAttribute("data-seller-offer-id");
+        const messageField = offerCard.querySelector("[data-seller-offer-message]");
+        const counterField = offerCard.querySelector("[data-seller-counter-amount]");
+        const message = messageField ? messageField.value.trim() : "";
+        const counterAmount = counterField ? counterField.value.trim() : "";
+
+        if (action === "counter" && !counterAmount) {
+          setStatus(listingState, "Enter counter amount before sending counter offer.", "error");
+          return;
+        }
+
+        actionButton.disabled = true;
+        setStatus(listingState, "Updating offer...", "");
+        try {
+          await requestJson(API.offers, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              offerId,
+              action,
+              sellerEmail: sellerEmail.value.trim().toLowerCase(),
+              message,
+              counterAmount: counterAmount || null,
+            }),
+          });
+          setStatus(listingState, "Offer updated successfully.", "ok");
+          await loadSellerOffers();
+        } catch (error) {
+          setStatus(listingState, error.message || "Could not update offer.", "error");
+        } finally {
+          actionButton.disabled = false;
+        }
+      });
+    }
+
     if (sellerEmail.value.trim()) {
       loadSellerListings();
+      loadSellerOffers();
     }
     refreshPreviewFromInputs();
   }

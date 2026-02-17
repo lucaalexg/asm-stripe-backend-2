@@ -63,10 +63,54 @@
         <div id="customer-signup-status" class="status-line" aria-live="polite"></div>
       </section>
 
+      <section class="container panel">
+        <div class="section-head">
+          <div>
+            <h2>Member tools</h2>
+            <p>Connect with your customer email to manage wishlist, offers, and saved searches.</p>
+          </div>
+        </div>
+        <form id="customer-context-form" class="signup-grid">
+          <div>
+            <label for="customer-context-email">Customer email</label>
+            <input id="customer-context-email" type="email" required placeholder="you@example.com" />
+          </div>
+          <div>
+            <button class="button" type="submit">Connect account</button>
+          </div>
+          <div>
+            <button id="refresh-member-data" class="button button--ghost" type="button">Refresh member data</button>
+          </div>
+        </form>
+        <div id="customer-context-status" class="status-line" aria-live="polite"></div>
+        <div class="member-grid">
+          <section>
+            <h3>Wishlist</h3>
+            <div id="wishlist-items" class="member-list"></div>
+          </section>
+          <section>
+            <h3>My offers</h3>
+            <div id="offer-items" class="member-list"></div>
+          </section>
+          <section>
+            <h3>Saved searches</h3>
+            <div id="saved-search-items" class="member-list"></div>
+          </section>
+        </div>
+      </section>
+
       <section class="container panel filters">
         <div class="field">
           <label for="search">Search designer or piece</label>
           <input id="search" type="search" placeholder="e.g. Prada loafers, Dior saddle..." />
+        </div>
+        <div class="field">
+          <label for="brand">Brand</label>
+          <input id="brand" type="text" placeholder="e.g. Gucci" />
+        </div>
+        <div class="field">
+          <label for="size-filter">Size</label>
+          <input id="size-filter" type="text" placeholder="e.g. IT 40" />
         </div>
         <div class="field">
           <label for="condition">Condition</label>
@@ -77,8 +121,28 @@
           </select>
         </div>
         <div class="field">
-          <label>&nbsp;</label>
+          <label for="min-price">Min price (EUR)</label>
+          <input id="min-price" type="number" min="0" step="1" placeholder="100" />
+        </div>
+        <div class="field">
+          <label for="max-price">Max price (EUR)</label>
+          <input id="max-price" type="number" min="0" step="1" placeholder="2000" />
+        </div>
+        <div class="field">
+          <label for="sort">Sort</label>
+          <select id="sort">
+            <option value="newest">Newest</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_desc">Price: high to low</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="refresh">&nbsp;</label>
           <button id="refresh" class="button button--ghost" type="button">Refresh</button>
+        </div>
+        <div class="field">
+          <label for="save-search">&nbsp;</label>
+          <button id="save-search" class="button button--ghost" type="button">Save search</button>
         </div>
       </section>
 

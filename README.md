@@ -7,6 +7,9 @@ This repository now includes:
 - Stripe Connect Express onboarding for sellers
 - Customer registration endpoint (email + phone)
 - Supabase-powered listings catalog
+- Wishlist (save items) and saved search presets
+- Offer and counter-offer negotiation flow
+- Advanced marketplace filtering (brand, size, condition, price, sorting)
 - Listing moderation workflow (pending/approved/rejected)
 - Multi-image + video listing media support
 - Checkout Session creation with Connect destination payouts + platform fee
@@ -47,6 +50,9 @@ Tables created:
 - `customer_profiles`
 - `seller_profiles`
 - `listings`
+- `wishlist_items`
+- `saved_searches`
+- `offers`
 
 `listings` now tracks:
 
@@ -74,7 +80,7 @@ Returns onboarding state for a seller profile.
 ### `GET|POST|PATCH /api/listings`
 
 - `GET`: list marketplace inventory
-  - query params: `status`, `condition`, `search`, `limit`, `offset`
+  - query params: `status`, `condition`, `search`, `brand`, `size`, `min_price`, `max_price`, `sort`, `limit`, `offset`
   - optional seller view params: `seller_email`, `moderation_status`
 - `POST`: create listing (saved as `pending` moderation by default)
 - `PATCH`: seller status update (`active` or `archived`)
@@ -100,6 +106,32 @@ Admin-only moderation API (`Authorization: Bearer <MARKETPLACE_ADMIN_TOKEN>`):
 - `POST` actions:
   - `approve` -> listing becomes buyable and approved primary image is transformed to white background canvas
   - `reject` -> listing hidden from public feed with moderation reason
+
+### `GET|POST|DELETE /api/wishlist`
+
+Wishlist operations for customers:
+
+- `GET` by `customer_email`
+- `POST` save listing by `customerEmail` + `listingId`
+- `DELETE` remove listing by `customerEmail` + `listingId`
+
+### `GET|POST|DELETE /api/saved-searches`
+
+Saved search presets for customers:
+
+- `GET` by `customer_email`
+- `POST` create preset with filters (`search`, `brand`, `size`, `condition`, `min_price`, `max_price`, `sort`)
+- `DELETE` remove by `savedSearchId`
+
+### `GET|POST|PATCH /api/offers`
+
+Offer negotiation API:
+
+- `POST` create buyer offer on approved active listing
+- `GET` fetch offers by `customer_email`, `seller_email`, or `listing_id`
+- `PATCH` actions:
+  - seller: `accept`, `reject`, `counter`
+  - buyer: `cancel`, `accept_counter`
 
 ### `POST /api/create-checkout-session`
 
@@ -137,7 +169,7 @@ Uploads image to Cloudinary:
 
 ## 4) Frontend routes
 
-- `/` -> buyer marketplace page (customer registration + filters + direct Stripe Checkout)
+- `/` -> buyer marketplace page (customer registration, member tools, wishlist/offers/saved searches, advanced filters, direct Stripe Checkout)
 - `/sell-with-us.html` -> seller onboarding, rich-media submission, and submission status tracking
 - `/admin-review.html` -> approve/decline queue for your moderation team
 
