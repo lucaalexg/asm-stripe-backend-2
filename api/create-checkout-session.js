@@ -24,6 +24,27 @@ function parseUrl(value) {
   }
 }
 
+function normalizeJsonArray(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_error) {
+      return [];
+    }
+  }
+  return [];
+}
+
+function parseHttpUrl(value) {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!/^https?:\/\//i.test(trimmed)) return null;
+  return trimmed;
+}
+
 module.exports = async (req, res) => {
   setCors(res);
 
@@ -67,7 +88,7 @@ module.exports = async (req, res) => {
     const listingResult = await supabase
       .from("listings")
       .select(
-        "id, seller_id, title, brand, description, size, condition, is_new, price_cents, currency, image_url, status"
+        "id, seller_id, title, brand, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, moderation_status, status"
       )
       .eq("id", listingId)
       .maybeSingle();
@@ -84,6 +105,12 @@ module.exports = async (req, res) => {
     if (listing.status !== "active") {
       return sendJson(res, 409, {
         error: `Listing cannot be purchased while status is '${listing.status}'.`,
+      });
+    }
+
+    if (listing.moderation_status !== "approved") {
+      return sendJson(res, 409, {
+        error: `Listing cannot be purchased before moderation approval (current: ${listing.moderation_status}).`,
       });
     }
 
@@ -148,8 +175,16 @@ module.exports = async (req, res) => {
       description: sanitizeText(listing.description, 240) || undefined,
     };
 
-    if (listing.image_url && /^https?:\/\//i.test(listing.image_url)) {
-      productData.images = [listing.image_url];
+    const approvedMedia = normalizeJsonArray(listing.approved_media_urls)
+      .map(parseHttpUrl)
+      .filter(Boolean);
+    const submittedMedia = normalizeJsonArray(listing.media_urls)
+      .map(parseHttpUrl)
+      .filter(Boolean);
+    const primaryImage = approvedMedia[0] || submittedMedia[0] || parseHttpUrl(listing.image_url);
+
+    if (primaryImage) {
+      productData.images = [primaryImage];
     }
 
     const session = await stripe.checkout.sessions.create({

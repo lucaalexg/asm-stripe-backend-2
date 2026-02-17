@@ -40,7 +40,7 @@
 
       <section class="panel">
         <h2>2. Publish a listing</h2>
-        <p>Create a listing for new or pre-owned designer pieces.</p>
+        <p>Create a listing with rich media. Every submission is reviewed before going live.</p>
         <form id="listing-form" class="stack">
           <label for="title">Title</label>
           <input id="title" name="title" required placeholder="Leather shoulder bag" />
@@ -79,12 +79,31 @@
           <label for="image-url">Image URL (optional if uploading file)</label>
           <input id="image-url" name="image-url" type="url" placeholder="https://..." />
 
-          <label for="image-file">Or upload image</label>
-          <input id="image-file" name="image-file" type="file" accept="image/*" />
+          <label for="image-urls">Additional image URLs (one per line)</label>
+          <textarea id="image-urls" name="image-urls" rows="3" placeholder="https://...\nhttps://..."></textarea>
+
+          <label for="image-file">Upload images (you can select multiple)</label>
+          <input id="image-file" name="image-file" type="file" accept="image/*" multiple />
+
+          <label for="video-url">Video URL (optional)</label>
+          <input id="video-url" name="video-url" type="url" placeholder="https://youtube.com/... or hosted MP4 link" />
+
+          <div id="media-preview" class="media-preview"></div>
 
           <button type="submit" class="button">Publish listing</button>
         </form>
         <div id="listing-state" class="status-line" aria-live="polite"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <h2>3. My listing submissions</h2>
+            <p>Track moderation result and see whether a listing is approved, pending, or rejected.</p>
+          </div>
+          <button id="refresh-my-listings" type="button" class="button button--ghost">Refresh</button>
+        </div>
+        <div id="my-listings" class="submission-list"></div>
       </section>
     </main>
 

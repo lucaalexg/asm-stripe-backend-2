@@ -19,6 +19,7 @@
         </div>
         <nav class="header-nav">
           <a href="/sell-with-us.html">Sell with us</a>
+          <a href="/admin-review.html">Moderation</a>
         </nav>
       </div>
     </header>
@@ -29,6 +30,37 @@
           Curated second-life luxury, sharp pricing, and secure checkout with Stripe Connect.
           The Vestiaire-like feel, tailored for Archive Sur Mer.
         </p>
+      </section>
+
+      <section class="container panel">
+        <div class="section-head">
+          <div>
+            <h2>Create your customer account</h2>
+            <p>Register with email and phone number for a smoother checkout experience.</p>
+          </div>
+        </div>
+        <form id="customer-signup-form" class="signup-grid">
+          <div>
+            <label for="customer-name">Full name (optional)</label>
+            <input id="customer-name" type="text" placeholder="Your name" />
+          </div>
+          <div>
+            <label for="customer-email">Email</label>
+            <input id="customer-email" type="email" required placeholder="you@example.com" />
+          </div>
+          <div>
+            <label for="customer-phone">Phone number (international)</label>
+            <input id="customer-phone" type="tel" required placeholder="+491751234567" />
+          </div>
+          <label class="checkbox-line">
+            <input id="customer-marketing" type="checkbox" />
+            <span>I want updates about new arrivals and drops.</span>
+          </label>
+          <div>
+            <button class="button" type="submit">Create account</button>
+          </div>
+        </form>
+        <div id="customer-signup-status" class="status-line" aria-live="polite"></div>
       </section>
 
       <section class="container panel filters">
