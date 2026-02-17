@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Archive Sur Mer Marketplace</title>
+    <meta
+      name="description"
+      content="Archive Sur Mer marketplace for new and pre-owned designer-wear."
+    />
+    <link rel="stylesheet" href="/marketplace.css" />
+  </head>
+  <body data-page="marketplace">
+    <header class="site-header">
+      <div class="container header-grid">
+        <div>
+          <p class="eyebrow">ARCHIVE SUR MER</p>
+          <h1 class="brand-title">Designer-wear Marketplace</h1>
+        </div>
+        <nav class="header-nav">
+          <a href="/sell-with-us.html">Sell with us</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero container">
+        <p>
+          Curated second-life luxury, sharp pricing, and secure checkout with Stripe Connect.
+          The Vestiaire-like feel, tailored for Archive Sur Mer.
+        </p>
+      </section>
+
+      <section class="container panel filters">
+        <div class="field">
+          <label for="search">Search designer or piece</label>
+          <input id="search" type="search" placeholder="e.g. Prada loafers, Dior saddle..." />
+        </div>
+        <div class="field">
+          <label for="condition">Condition</label>
+          <select id="condition">
+            <option value="all">All</option>
+            <option value="new">New</option>
+            <option value="used">Pre-owned</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button id="refresh" class="button button--ghost" type="button">Refresh</button>
+        </div>
+      </section>
+
+      <section class="container">
+        <div id="listing-status" class="status-line" aria-live="polite"></div>
+        <div id="listing-grid" class="listing-grid"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>Archive Sur Mer marketplace infrastructure by Stripe Connect + Supabase.</p>
+      </div>
+    </footer>
+
+    <script src="/marketplace.js"></script>
+  </body>
+</html>
