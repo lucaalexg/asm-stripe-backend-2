@@ -84,6 +84,15 @@ function parseImageUrl(value) {
   return parseHttpUrl(value, 700);
 }
 
+function parsePriceFilter(value) {
+  if (value === null || value === undefined || String(value).trim() === "") return null;
+  const cents = toPriceCents(value);
+  if (!Number.isInteger(cents) || cents < 0) {
+    return NaN;
+  }
+  return cents;
+}
+
 module.exports = async (req, res) => {
   setCors(res);
 
@@ -99,11 +108,34 @@ module.exports = async (req, res) => {
       const status = sanitizeText(getQueryParam(req, "status"), 20).toLowerCase() || "active";
       const search = parseSearch(getQueryParam(req, "search"));
       const condition = sanitizeText(getQueryParam(req, "condition"), 20).toLowerCase();
+      const brand = sanitizeText(getQueryParam(req, "brand"), 80);
+      const size = sanitizeText(getQueryParam(req, "size"), 40);
+      const sort = sanitizeText(getQueryParam(req, "sort"), 20).toLowerCase() || "newest";
+      const minPriceCents = parsePriceFilter(getQueryParam(req, "min_price"));
+      const maxPriceCents = parsePriceFilter(getQueryParam(req, "max_price"));
       const moderationState =
         sanitizeText(getQueryParam(req, "moderation_status"), 20).toLowerCase() || "";
       const sellerEmail = sanitizeText(getQueryParam(req, "seller_email"), 160).toLowerCase();
       const limit = clampInt(getQueryParam(req, "limit"), 1, 60, 24);
       const offset = clampInt(getQueryParam(req, "offset"), 0, 5000, 0);
+
+      if (Number.isNaN(minPriceCents) || Number.isNaN(maxPriceCents)) {
+        return sendJson(res, 400, {
+          error: "min_price and max_price must be numeric values.",
+        });
+      }
+
+      if (
+        minPriceCents !== null &&
+        maxPriceCents !== null &&
+        Number.isInteger(minPriceCents) &&
+        Number.isInteger(maxPriceCents) &&
+        minPriceCents > maxPriceCents
+      ) {
+        return sendJson(res, 400, {
+          error: "min_price cannot be greater than max_price.",
+        });
+      }
 
       let sellerId = null;
 
@@ -133,8 +165,15 @@ module.exports = async (req, res) => {
         .select(
           "id, seller_id, title, brand, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at, sold_at"
         )
-        .order("created_at", { ascending: false })
         .range(offset, offset + limit - 1);
+
+      if (sort === "price_asc") {
+        query = query.order("price_cents", { ascending: true }).order("created_at", { ascending: false });
+      } else if (sort === "price_desc") {
+        query = query.order("price_cents", { ascending: false }).order("created_at", { ascending: false });
+      } else {
+        query = query.order("created_at", { ascending: false });
+      }
 
       if (status && status !== "all") {
         query = query.eq("status", status);
@@ -161,6 +200,22 @@ module.exports = async (req, res) => {
         query = query.eq("is_new", true);
       } else if (condition === "used" || condition === "pre-owned" || condition === "preowned") {
         query = query.eq("is_new", false);
+      }
+
+      if (brand) {
+        query = query.ilike("brand", `%${brand}%`);
+      }
+
+      if (size) {
+        query = query.ilike("size", `%${size}%`);
+      }
+
+      if (minPriceCents !== null) {
+        query = query.gte("price_cents", minPriceCents);
+      }
+
+      if (maxPriceCents !== null) {
+        query = query.lte("price_cents", maxPriceCents);
       }
 
       if (search) {

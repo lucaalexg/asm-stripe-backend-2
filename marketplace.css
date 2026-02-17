@@ -85,7 +85,7 @@ body {
 
 .filters {
   display: grid;
-  grid-template-columns: 2fr 1fr auto;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -245,6 +245,22 @@ textarea {
   flex: 1;
 }
 
+.listing-actions {
+  margin-top: auto;
+  display: grid;
+  gap: 8px;
+}
+
+.offer-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+}
+
+.offer-row input {
+  min-width: 0;
+}
+
 .listing-brand {
   margin: 0;
   font-size: 12px;
@@ -279,7 +295,6 @@ textarea {
 }
 
 .buy-button {
-  margin-top: auto;
   width: 100%;
 }
 
@@ -326,6 +341,43 @@ textarea {
   gap: 10px;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   align-items: end;
+}
+
+.member-grid {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.member-grid h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.member-list {
+  display: grid;
+  gap: 8px;
+}
+
+.member-item {
+  border: 1px solid var(--line);
+  padding: 8px;
+  background: #fff;
+}
+
+.member-item p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.member-item strong {
+  color: var(--ink);
+}
+
+.member-item .button-row {
+  margin-top: 8px;
 }
 
 .checkbox-line {
