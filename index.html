@@ -1,246 +1,184 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Archive Sur Mer Marketplace</title>
-    <meta
-      name="description"
-      content="Archive Sur Mer marketplace for new and pre-owned designer-wear."
-    />
-    <link rel="stylesheet" href="/marketplace.css" />
-  </head>
-  <body data-page="marketplace">
-    <div class="top-note">
-      <div class="container">
-        <p>
-          Curated luxury marketplace • authenticated sellers • secure payments via Stripe Connect
-        </p>
-      </div>
-    </div>
-
-    <header class="site-header">
-      <div class="container header-grid">
-        <div>
-          <p class="eyebrow">ARCHIVE SUR MER</p>
-          <h1 class="brand-title">Designer-wear Marketplace</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Marketplace</title>
+    <link rel="stylesheet" href="marketplace.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="navbar-left">
+            <div class="navbar-logo">
+                <a href="/">LUXE</a>
+            </div>
+            <nav class="navbar-menu">
+                <a href="#" class="nav-link">Browse</a>
+                <a href="/sell-with-us.html" class="nav-link">Sell With Us</a>
+                <a href="#" class="nav-link">Help</a>
+            </nav>
         </div>
-        <nav class="header-nav">
-          <a href="#discover">Women</a>
-          <a href="#discover">Men</a>
-          <a href="#discover">Bags</a>
-          <a href="#discover">Shoes</a>
-          <a href="/sell-with-us.html">Sell with us</a>
-          <a href="/admin-review.html">Moderation</a>
-        </nav>
-      </div>
+
+        <!-- Account Section (Top Right) -->
+        <div class="account-section">
+            <button class="search-icon" id="searchBtn">🔍</button>
+            <div class="account-dropdown">
+                <button class="account-btn" id="accountBtn">👤</button>
+                <div class="account-dropdown-content" id="accountDropdown">
+                    <div class="dropdown-header">
+                        <div class="user-status" id="userStatus">Not logged in</div>
+                    </div>
+                    <a href="#" class="dropdown-item">My Profile</a>
+                    <a href="#" class="dropdown-item">My Orders</a>
+                    <a href="#" class="dropdown-item">My Wishlist</a>
+                    <a href="#" class="dropdown-item">Settings</a>
+                    <button class="dropdown-item login-btn" id="loginBtn">Sign In</button>
+                    <button class="dropdown-item logout-btn" id="logoutBtn" style="display:none;">Sign Out</button>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <main>
-      <section class="hero container hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">NEW SEASON EDIT</p>
-          <h2>Luxury fashion with a second life.</h2>
-          <p>
-            Discover premium designer pieces from a vetted community. Make offers, save favorites,
-            and shop confidently.
-          </p>
-          <div class="button-row">
-            <a class="button" href="#discover">Shop now</a>
-            <a class="button button--ghost" href="/sell-with-us.html">Sell a piece</a>
-          </div>
-        </div>
-        <div class="hero-visual" aria-hidden="true">
-          <div class="hero-card hero-card--a"></div>
-          <div class="hero-card hero-card--b"></div>
-          <div class="hero-card hero-card--c"></div>
-        </div>
-      </section>
-
-      <section class="container panel trust-strip">
-        <article>
-          <h3>Authenticity first</h3>
-          <p>Listings are moderated before going live.</p>
-        </article>
-        <article>
-          <h3>Direct offers</h3>
-          <p>Negotiate instantly with sellers in-platform.</p>
-        </article>
-        <article>
-          <h3>Secure checkout</h3>
-          <p>Payouts and payments handled via Stripe Connect.</p>
-        </article>
-      </section>
-
-      <section class="container panel">
-        <div class="section-head">
-          <div>
-            <h2>Shop by mood</h2>
-            <p>Jump into curated categories and trending houses.</p>
-          </div>
-        </div>
-        <div id="quick-filter-chips" class="chip-row">
-          <button class="chip" data-chip-brand="Chanel" type="button">Chanel</button>
-          <button class="chip" data-chip-brand="Hermes" type="button">Hermes</button>
-          <button class="chip" data-chip-brand="Dior" type="button">Dior</button>
-          <button class="chip" data-chip-brand="Saint Laurent" type="button">Saint Laurent</button>
-          <button class="chip" data-chip-condition="new" type="button">New with tags</button>
-          <button class="chip" data-chip-condition="used" type="button">Pre-owned gems</button>
-          <button class="chip" data-chip-sort="price_desc" data-chip-min-price="2000" type="button">High luxury</button>
-          <button class="chip" data-chip-sort="price_asc" data-chip-max-price="1000" type="button">Under €1000</button>
-        </div>
-      </section>
-
-      <section id="member-lounge" class="container panel member-lounge member-lounge--collapsed">
-        <div class="section-head">
-          <div>
-            <h2>Member lounge</h2>
-            <p>Create account and manage wishlist, offers, and saved searches.</p>
-          </div>
-          <button id="toggle-member-lounge" class="button button--ghost" type="button">Open member lounge</button>
-        </div>
-        <div class="member-layout">
-          <section class="panel panel--inset">
-            <h3>Create your customer account</h3>
-            <form id="customer-signup-form" class="signup-grid">
-              <div>
-                <label for="customer-name">Full name (optional)</label>
-                <input id="customer-name" type="text" placeholder="Your name" />
-              </div>
-              <div>
-                <label for="customer-email">Email</label>
-                <input id="customer-email" type="email" required placeholder="you@example.com" />
-              </div>
-              <div>
-                <label for="customer-phone">Phone number (international)</label>
-                <input id="customer-phone" type="tel" required placeholder="+491751234567" />
-              </div>
-              <label class="checkbox-line">
-                <input id="customer-marketing" type="checkbox" />
-                <span>I want updates about new arrivals and drops.</span>
-              </label>
-              <div>
-                <button class="button" type="submit">Create account</button>
-              </div>
-            </form>
-            <div id="customer-signup-status" class="status-line" aria-live="polite"></div>
-          </section>
-
-          <section class="panel panel--inset">
-            <h3>Connect member tools</h3>
-            <form id="customer-context-form" class="signup-grid">
-              <div>
-                <label for="customer-context-email">Customer email</label>
-                <input id="customer-context-email" type="email" required placeholder="you@example.com" />
-              </div>
-              <div>
-                <button class="button" type="submit">Connect account</button>
-              </div>
-              <div>
-                <button id="refresh-member-data" class="button button--ghost" type="button">Refresh member data</button>
-              </div>
-            </form>
-            <div id="customer-context-status" class="status-line" aria-live="polite"></div>
-
-            <div class="member-grid">
-              <section>
-                <h3>Wishlist</h3>
-                <div id="wishlist-items" class="member-list"></div>
-              </section>
-              <section>
-                <h3>My offers</h3>
-                <div id="offer-items" class="member-list"></div>
-              </section>
-              <section>
-                <h3>Saved searches</h3>
-                <div id="saved-search-items" class="member-list"></div>
-              </section>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Discover Luxury Fashion</h1>
+                <p>Curated collection of premium brands and designer items</p>
+                <button class="cta-button" onclick="scrollToMarketplace()">Shop Now</button>
             </div>
-          </section>
-        </div>
-      </section>
+        </section>
 
-      <section id="discover" class="container panel filters">
-        <div class="field">
-          <label for="search">Search designer or piece</label>
-          <input id="search" type="search" placeholder="e.g. Prada loafers, Dior saddle..." />
-        </div>
-        <div class="field">
-          <label for="brand">Brand</label>
-          <input id="brand" type="text" placeholder="e.g. Gucci" />
-        </div>
-        <div class="field">
-          <label for="size-filter">Size</label>
-          <input id="size-filter" type="text" placeholder="e.g. IT 40" />
-        </div>
-        <div class="field">
-          <label for="condition">Condition</label>
-          <select id="condition">
-            <option value="all">All</option>
-            <option value="new">New</option>
-            <option value="used">Pre-owned</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="min-price">Min price (EUR)</label>
-          <input id="min-price" type="number" min="0" step="1" placeholder="100" />
-        </div>
-        <div class="field">
-          <label for="max-price">Max price (EUR)</label>
-          <input id="max-price" type="number" min="0" step="1" placeholder="2000" />
-        </div>
-        <div class="field">
-          <label for="sort">Sort</label>
-          <select id="sort">
-            <option value="newest">Newest</option>
-            <option value="price_asc">Price: low to high</option>
-            <option value="price_desc">Price: high to low</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="refresh">&nbsp;</label>
-          <button id="refresh" class="button button--ghost" type="button">Refresh</button>
-        </div>
-        <div class="field">
-          <label for="save-search">&nbsp;</label>
-          <button id="save-search" class="button button--ghost" type="button">Save search</button>
-        </div>
-        <div class="field">
-          <label for="reset-filters">&nbsp;</label>
-          <button id="reset-filters" class="button button--ghost" type="button">Reset filters</button>
-        </div>
-      </section>
+        <!-- Filter Section -->
+        <section class="marketplace-header">
+            <div class="filters-container">
+                <div class="filter-group">
+                    <label for="categoryFilter">Category</label>
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="shoes">Shoes</option>
+                        <option value="bags">Bags</option>
+                        <option value="accessories">Accessories</option>
+                    </select>
+                </div>
 
-      <section class="container">
-        <div id="listing-status" class="status-line" aria-live="polite"></div>
-        <div id="listing-grid" class="listing-grid"></div>
-      </section>
+                <div class="filter-group">
+                    <label for="priceFilter">Price Range</label>
+                    <select id="priceFilter" class="filter-select">
+                        <option value="">All Prices</option>
+                        <option value="0-50">$0 - $50</option>
+                        <option value="50-200">$50 - $200</option>
+                        <option value="200-500">$200 - $500</option>
+                        <option value="500+">$500+</option>
+                    </select>
+                </div>
 
-      <section class="container panel editorial-note">
-        <div>
-          <h2>Archive Sur Mer Standard</h2>
-          <p>
-            We blend luxury styling with strong marketplace mechanics: moderated catalog quality,
-            transparent seller negotiation, and trusted payout infrastructure.
-          </p>
-        </div>
-      </section>
+                <div class="filter-group">
+                    <label for="sortFilter">Sort By</label>
+                    <select id="sortFilter" class="filter-select">
+                        <option value="newest">Newest</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="popular">Most Popular</option>
+                    </select>
+                </div>
+            </div>
+        </section>
 
-      <section class="container panel cta-band">
-        <div>
-          <h2>Have exceptional pieces to sell?</h2>
-          <p>Join verified sellers and publish to an audience that knows designer fashion.</p>
-        </div>
-        <a class="button" href="/sell-with-us.html">Start selling</a>
-      </section>
+        <!-- Products Grid -->
+        <section class="marketplace">
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded here by JavaScript -->
+            </div>
+        </section>
     </main>
 
-    <footer class="site-footer">
-      <div class="container">
-        <p>Archive Sur Mer marketplace infrastructure by Stripe Connect + Supabase.</p>
-      </div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About</h4>
+                <a href="#">About Us</a>
+                <a href="#">Careers</a>
+                <a href="#">Press</a>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="#">Contact Us</a>
+                <a href="#">FAQ</a>
+                <a href="#">Shipping</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+            <div class="footer-section">
+                <h4>Follow</h4>
+                <a href="#">Instagram</a>
+                <a href="#">Twitter</a>
+                <a href="#">Facebook</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Luxury Marketplace. All rights reserved.</p>
+        </div>
     </footer>
 
-    <script src="/marketplace.js"></script>
-  </body>
+    <script src="marketplace.js"></script>
+    <script>
+        // Account dropdown toggle
+        const accountBtn = document.getElementById('accountBtn');
+        const accountDropdown = document.getElementById('accountDropdown');
+        const searchBtn = document.getElementById('searchBtn');
+
+        accountBtn.addEventListener('click', () => {
+            accountDropdown.style.display = accountDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.account-dropdown') && !e.target.closest('.search-icon')) {
+                accountDropdown.style.display = 'none';
+            }
+        });
+
+        function scrollToMarketplace() {
+            document.querySelector('.marketplace').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Check authentication status
+        function checkAuthStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userEmail = localStorage.getItem('userEmail');
+            const userStatus = document.getElementById('userStatus');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (isLoggedIn) {
+                userStatus.textContent = userEmail || 'User Account';
+                logoutBtn.style.display = 'block';
+                loginBtn.style.display = 'none';
+            } else {
+                logoutBtn.style.display = 'none';
+                loginBtn.style.display = 'block';
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userEmail');
+            checkAuthStatus();
+        });
+
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            alert('Login functionality to be implemented');
+        });
+
+        checkAuthStatus();
+    </script>
+</body>
 </html>
