@@ -11,6 +11,14 @@
     <link rel="stylesheet" href="/marketplace.css" />
   </head>
   <body data-page="marketplace">
+    <div class="top-note">
+      <div class="container">
+        <p>
+          Curated luxury marketplace • authenticated sellers • secure payments via Stripe Connect
+        </p>
+      </div>
+    </div>
+
     <header class="site-header">
       <div class="container header-grid">
         <div>
@@ -18,6 +26,10 @@
           <h1 class="brand-title">Designer-wear Marketplace</h1>
         </div>
         <nav class="header-nav">
+          <a href="#discover">Women</a>
+          <a href="#discover">Men</a>
+          <a href="#discover">Bags</a>
+          <a href="#discover">Shoes</a>
           <a href="/sell-with-us.html">Sell with us</a>
           <a href="/admin-review.html">Moderation</a>
         </nav>
@@ -25,81 +37,130 @@
     </header>
 
     <main>
-      <section class="hero container">
-        <p>
-          Curated second-life luxury, sharp pricing, and secure checkout with Stripe Connect.
-          The Vestiaire-like feel, tailored for Archive Sur Mer.
-        </p>
+      <section class="hero container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">NEW SEASON EDIT</p>
+          <h2>Luxury fashion with a second life.</h2>
+          <p>
+            Discover premium designer pieces from a vetted community. Make offers, save favorites,
+            and shop confidently.
+          </p>
+          <div class="button-row">
+            <a class="button" href="#discover">Shop now</a>
+            <a class="button button--ghost" href="/sell-with-us.html">Sell a piece</a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-card hero-card--a"></div>
+          <div class="hero-card hero-card--b"></div>
+          <div class="hero-card hero-card--c"></div>
+        </div>
+      </section>
+
+      <section class="container panel trust-strip">
+        <article>
+          <h3>Authenticity first</h3>
+          <p>Listings are moderated before going live.</p>
+        </article>
+        <article>
+          <h3>Direct offers</h3>
+          <p>Negotiate instantly with sellers in-platform.</p>
+        </article>
+        <article>
+          <h3>Secure checkout</h3>
+          <p>Payouts and payments handled via Stripe Connect.</p>
+        </article>
       </section>
 
       <section class="container panel">
         <div class="section-head">
           <div>
-            <h2>Create your customer account</h2>
-            <p>Register with email and phone number for a smoother checkout experience.</p>
+            <h2>Shop by mood</h2>
+            <p>Jump into curated categories and trending houses.</p>
           </div>
         </div>
-        <form id="customer-signup-form" class="signup-grid">
-          <div>
-            <label for="customer-name">Full name (optional)</label>
-            <input id="customer-name" type="text" placeholder="Your name" />
-          </div>
-          <div>
-            <label for="customer-email">Email</label>
-            <input id="customer-email" type="email" required placeholder="you@example.com" />
-          </div>
-          <div>
-            <label for="customer-phone">Phone number (international)</label>
-            <input id="customer-phone" type="tel" required placeholder="+491751234567" />
-          </div>
-          <label class="checkbox-line">
-            <input id="customer-marketing" type="checkbox" />
-            <span>I want updates about new arrivals and drops.</span>
-          </label>
-          <div>
-            <button class="button" type="submit">Create account</button>
-          </div>
-        </form>
-        <div id="customer-signup-status" class="status-line" aria-live="polite"></div>
+        <div id="quick-filter-chips" class="chip-row">
+          <button class="chip" data-chip-brand="Chanel" type="button">Chanel</button>
+          <button class="chip" data-chip-brand="Hermes" type="button">Hermes</button>
+          <button class="chip" data-chip-brand="Dior" type="button">Dior</button>
+          <button class="chip" data-chip-brand="Saint Laurent" type="button">Saint Laurent</button>
+          <button class="chip" data-chip-condition="new" type="button">New with tags</button>
+          <button class="chip" data-chip-condition="used" type="button">Pre-owned gems</button>
+          <button class="chip" data-chip-sort="price_desc" data-chip-min-price="2000" type="button">High luxury</button>
+          <button class="chip" data-chip-sort="price_asc" data-chip-max-price="1000" type="button">Under €1000</button>
+        </div>
       </section>
 
-      <section class="container panel">
+      <section id="member-lounge" class="container panel member-lounge member-lounge--collapsed">
         <div class="section-head">
           <div>
-            <h2>Member tools</h2>
-            <p>Connect with your customer email to manage wishlist, offers, and saved searches.</p>
+            <h2>Member lounge</h2>
+            <p>Create account and manage wishlist, offers, and saved searches.</p>
           </div>
+          <button id="toggle-member-lounge" class="button button--ghost" type="button">Open member lounge</button>
         </div>
-        <form id="customer-context-form" class="signup-grid">
-          <div>
-            <label for="customer-context-email">Customer email</label>
-            <input id="customer-context-email" type="email" required placeholder="you@example.com" />
-          </div>
-          <div>
-            <button class="button" type="submit">Connect account</button>
-          </div>
-          <div>
-            <button id="refresh-member-data" class="button button--ghost" type="button">Refresh member data</button>
-          </div>
-        </form>
-        <div id="customer-context-status" class="status-line" aria-live="polite"></div>
-        <div class="member-grid">
-          <section>
-            <h3>Wishlist</h3>
-            <div id="wishlist-items" class="member-list"></div>
+        <div class="member-layout">
+          <section class="panel panel--inset">
+            <h3>Create your customer account</h3>
+            <form id="customer-signup-form" class="signup-grid">
+              <div>
+                <label for="customer-name">Full name (optional)</label>
+                <input id="customer-name" type="text" placeholder="Your name" />
+              </div>
+              <div>
+                <label for="customer-email">Email</label>
+                <input id="customer-email" type="email" required placeholder="you@example.com" />
+              </div>
+              <div>
+                <label for="customer-phone">Phone number (international)</label>
+                <input id="customer-phone" type="tel" required placeholder="+491751234567" />
+              </div>
+              <label class="checkbox-line">
+                <input id="customer-marketing" type="checkbox" />
+                <span>I want updates about new arrivals and drops.</span>
+              </label>
+              <div>
+                <button class="button" type="submit">Create account</button>
+              </div>
+            </form>
+            <div id="customer-signup-status" class="status-line" aria-live="polite"></div>
           </section>
-          <section>
-            <h3>My offers</h3>
-            <div id="offer-items" class="member-list"></div>
-          </section>
-          <section>
-            <h3>Saved searches</h3>
-            <div id="saved-search-items" class="member-list"></div>
+
+          <section class="panel panel--inset">
+            <h3>Connect member tools</h3>
+            <form id="customer-context-form" class="signup-grid">
+              <div>
+                <label for="customer-context-email">Customer email</label>
+                <input id="customer-context-email" type="email" required placeholder="you@example.com" />
+              </div>
+              <div>
+                <button class="button" type="submit">Connect account</button>
+              </div>
+              <div>
+                <button id="refresh-member-data" class="button button--ghost" type="button">Refresh member data</button>
+              </div>
+            </form>
+            <div id="customer-context-status" class="status-line" aria-live="polite"></div>
+
+            <div class="member-grid">
+              <section>
+                <h3>Wishlist</h3>
+                <div id="wishlist-items" class="member-list"></div>
+              </section>
+              <section>
+                <h3>My offers</h3>
+                <div id="offer-items" class="member-list"></div>
+              </section>
+              <section>
+                <h3>Saved searches</h3>
+                <div id="saved-search-items" class="member-list"></div>
+              </section>
+            </div>
           </section>
         </div>
       </section>
 
-      <section class="container panel filters">
+      <section id="discover" class="container panel filters">
         <div class="field">
           <label for="search">Search designer or piece</label>
           <input id="search" type="search" placeholder="e.g. Prada loafers, Dior saddle..." />
@@ -144,11 +205,33 @@
           <label for="save-search">&nbsp;</label>
           <button id="save-search" class="button button--ghost" type="button">Save search</button>
         </div>
+        <div class="field">
+          <label for="reset-filters">&nbsp;</label>
+          <button id="reset-filters" class="button button--ghost" type="button">Reset filters</button>
+        </div>
       </section>
 
       <section class="container">
         <div id="listing-status" class="status-line" aria-live="polite"></div>
         <div id="listing-grid" class="listing-grid"></div>
+      </section>
+
+      <section class="container panel editorial-note">
+        <div>
+          <h2>Archive Sur Mer Standard</h2>
+          <p>
+            We blend luxury styling with strong marketplace mechanics: moderated catalog quality,
+            transparent seller negotiation, and trusted payout infrastructure.
+          </p>
+        </div>
+      </section>
+
+      <section class="container panel cta-band">
+        <div>
+          <h2>Have exceptional pieces to sell?</h2>
+          <p>Join verified sellers and publish to an audience that knows designer fashion.</p>
+        </div>
+        <a class="button" href="/sell-with-us.html">Start selling</a>
       </section>
     </main>
 
