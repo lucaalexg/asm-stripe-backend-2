@@ -327,6 +327,8 @@
     const maxPriceInput = $("max-price");
     const sortSelect = $("sort");
     const saveSearchButton = $("save-search");
+    const resetFiltersButton = $("reset-filters");
+    const quickFilterChips = $("quick-filter-chips");
     const refreshButton = $("refresh");
     const grid = $("listing-grid");
     const status = $("listing-status");
@@ -340,6 +342,7 @@
       !maxPriceInput ||
       !sortSelect ||
       !saveSearchButton ||
+      !resetFiltersButton ||
       !refreshButton ||
       !grid ||
       !status
@@ -393,6 +396,29 @@
       if (customerContextEmail) {
         customerContextEmail.value = state.customerEmail;
       }
+      syncChipState();
+    }
+
+    function syncChipState() {
+      if (!quickFilterChips) return;
+      quickFilterChips.querySelectorAll(".chip").forEach((chip) => {
+        const chipBrand = chip.getAttribute("data-chip-brand");
+        const chipCondition = chip.getAttribute("data-chip-condition");
+        const chipSort = chip.getAttribute("data-chip-sort");
+        const chipMinPrice = chip.getAttribute("data-chip-min-price");
+        const chipMaxPrice = chip.getAttribute("data-chip-max-price");
+
+        const matchesBrand = chipBrand ? state.brand.toLowerCase() === chipBrand.toLowerCase() : true;
+        const matchesCondition = chipCondition ? state.condition === chipCondition : true;
+        const matchesSort = chipSort ? state.sort === chipSort : true;
+        const matchesMin = chipMinPrice ? state.minPrice === chipMinPrice : true;
+        const matchesMax = chipMaxPrice ? state.maxPrice === chipMaxPrice : true;
+
+        chip.classList.toggle(
+          "chip--active",
+          matchesBrand && matchesCondition && matchesSort && matchesMin && matchesMax
+        );
+      });
     }
 
     function requireCustomerEmail() {
@@ -631,6 +657,50 @@
       refreshStateFromInputs();
       loadListings();
     });
+
+    resetFiltersButton.addEventListener("click", () => {
+      state.search = "";
+      state.brand = "";
+      state.size = "";
+      state.condition = "all";
+      state.minPrice = "";
+      state.maxPrice = "";
+      state.sort = "newest";
+      applyStateToInputs();
+      loadListings();
+    });
+
+    if (quickFilterChips) {
+      quickFilterChips.addEventListener("click", (event) => {
+        const chip = event.target.closest(".chip");
+        if (!chip) return;
+
+        const chipBrand = chip.getAttribute("data-chip-brand");
+        const chipCondition = chip.getAttribute("data-chip-condition");
+        const chipSort = chip.getAttribute("data-chip-sort");
+        const chipMinPrice = chip.getAttribute("data-chip-min-price");
+        const chipMaxPrice = chip.getAttribute("data-chip-max-price");
+
+        if (chipBrand) {
+          state.brand = state.brand.toLowerCase() === chipBrand.toLowerCase() ? "" : chipBrand;
+        }
+        if (chipCondition) {
+          state.condition = state.condition === chipCondition ? "all" : chipCondition;
+        }
+        if (chipSort) {
+          state.sort = state.sort === chipSort ? "newest" : chipSort;
+        }
+        if (chipMinPrice) {
+          state.minPrice = state.minPrice === chipMinPrice ? "" : chipMinPrice;
+        }
+        if (chipMaxPrice) {
+          state.maxPrice = state.maxPrice === chipMaxPrice ? "" : chipMaxPrice;
+        }
+
+        applyStateToInputs();
+        loadListings();
+      });
+    }
 
     if (
       customerSignupForm &&
