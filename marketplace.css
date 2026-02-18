@@ -165,6 +165,10 @@ body {
   gap: 12px;
 }
 
+.member-lounge--collapsed .member-layout {
+  display: none;
+}
+
 .filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));

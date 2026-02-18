@@ -315,6 +315,8 @@
     const customerContextForm = $("customer-context-form");
     const customerContextEmail = $("customer-context-email");
     const customerContextStatus = $("customer-context-status");
+    const memberLounge = $("member-lounge");
+    const toggleMemberLoungeButton = $("toggle-member-lounge");
     const refreshMemberDataButton = $("refresh-member-data");
     const wishlistItems = $("wishlist-items");
     const offerItems = $("offer-items");
@@ -373,6 +375,15 @@
       setStatus(status, "Payment completed. Your order is confirmed.", "ok");
     } else if (checkoutState === "cancelled") {
       setStatus(status, "Checkout cancelled. Listing is still available.", "");
+    }
+
+    if (toggleMemberLoungeButton && memberLounge) {
+      toggleMemberLoungeButton.addEventListener("click", () => {
+        const collapsed = memberLounge.classList.toggle("member-lounge--collapsed");
+        toggleMemberLoungeButton.textContent = collapsed
+          ? "Open member lounge"
+          : "Close member lounge";
+      });
     }
 
     function refreshStateFromInputs() {
