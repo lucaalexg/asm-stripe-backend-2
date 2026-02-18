@@ -194,3 +194,12 @@ In Stripe Dashboard -> Developers -> Webhooks:
 - Listing creation expects seller email already onboarded in Stripe Connect flow.
 - New listings are submitted as pending and do not appear publicly until approved.
 - Checkout currently uses one-line-item "buy now" flow (quantity fixed to 1).
+
+---
+
+## 7) Roadmap blueprint
+
+- `PHASE1_VESTIAIRE_PARITY_BLUEPRINT.md` documents the Phase 1 frontend parity contract:
+  - Vestiaire-style structure/order
+  - Archive Sur Mer brand constraints
+  - feature parity map and Phase 2 handoff
