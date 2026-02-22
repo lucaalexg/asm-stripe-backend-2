@@ -155,6 +155,25 @@
     };
   }
 
+  function initAnnouncementBar() {
+    const announcement = document.querySelector("[data-asm-announcement]");
+    if (!announcement) return;
+
+    const messages = [
+      "Up To 80% Of The Retail Price",
+      "Free Shipping On Orders Over 200.-",
+      "100% Authenticity",
+      "Trusted by over 500 Customers",
+    ];
+    let index = messages.indexOf(announcement.textContent.trim());
+    if (index < 0) index = 0;
+
+    window.setInterval(() => {
+      index = (index + 1) % messages.length;
+      announcement.textContent = messages[index];
+    }, 3200);
+  }
+
   async function startCheckout(listingId, button, statusEl, buyerEmail = "") {
     button.disabled = true;
     setStatus(statusEl, "Creating secure checkout...", "");
@@ -1598,6 +1617,8 @@
       loadPendingQueue();
     }
   }
+
+  initAnnouncementBar();
 
   const pageType = document.body && document.body.dataset ? document.body.dataset.page : "";
   if (pageType === "marketplace") {

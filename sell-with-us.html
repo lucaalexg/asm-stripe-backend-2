@@ -15,116 +15,177 @@
     <link rel="stylesheet" href="/marketplace.css" />
   </head>
   <body data-page="seller">
-    <header class="site-header">
-      <div class="container header-grid">
-        <div class="brand-lockup">
+    <aside class="asm-announcement-bar">
+      <div class="container">
+        <p class="asm-announcement-text" data-asm-announcement>Free Shipping On Orders Over 200.-</p>
+      </div>
+    </aside>
+
+    <header class="asm-header">
+      <div class="container asm-header-inner">
+        <nav class="asm-nav asm-nav-left">
+          <a href="/">Home</a>
+          <a href="/">Catalog</a>
+          <a href="https://archivesurmer.com/blogs/news" target="_blank" rel="noreferrer noopener"
+            >About Us</a
+          >
+          <a href="/sell-with-us.html">Sell With Us</a>
+        </nav>
+        <a href="/" class="asm-logo-link" aria-label="Archive-sur-Mer home">
           <img
-            class="asm-wordmark"
-            src="https://archivesurmer.com/cdn/shop/files/IMG_4061.jpg?v=1759936258&width=1200"
-            alt="Archive Sur Mer"
+            class="asm-logo"
+            src="https://archivesurmer.com/cdn/shop/files/IMG_4060.png?height=100&v=1759936229"
+            alt="Archive-sur-Mer"
           />
-          <h1 class="brand-title">Seller Studio</h1>
-        </div>
-        <nav class="header-nav">
-          <a href="/">Back to marketplace</a>
+        </a>
+        <nav class="asm-nav asm-nav-right">
+          <a href="/">Marketplace</a>
+          <span class="asm-currency">CHF</span>
         </nav>
       </div>
     </header>
 
-    <main class="container seller-layout">
-      <section class="panel">
-        <h2>1. Connect your Stripe account</h2>
-        <p>Every payout goes straight to your Stripe Express account.</p>
-        <form id="onboarding-form" class="stack">
-          <label for="seller-email">Seller email</label>
-          <input id="seller-email" name="seller-email" type="email" required placeholder="you@brand.com" />
-          <div class="button-row">
-            <button type="submit" class="button">Start onboarding</button>
-            <button id="check-status" type="button" class="button button--ghost">Check account status</button>
-          </div>
-        </form>
-        <div id="onboarding-state" class="status-line" aria-live="polite"></div>
-      </section>
-
-      <section class="panel">
-        <h2>2. Publish a listing</h2>
-        <p>Create a listing with rich media. Every submission is reviewed before going live.</p>
-        <form id="listing-form" class="stack">
-          <label for="title">Title</label>
-          <input id="title" name="title" required placeholder="Leather shoulder bag" />
-
-          <label for="brand">Brand</label>
-          <input id="brand" name="brand" required placeholder="Saint Laurent" />
-
-          <div class="grid-2">
-            <div>
-              <label for="price">Price (EUR)</label>
-              <input id="price" name="price" type="number" min="1" step="0.01" required placeholder="980" />
-            </div>
-            <div>
-              <label for="size">Size</label>
-              <input id="size" name="size" placeholder="IT 40 / One size" />
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div>
-              <label for="condition-field">Condition</label>
-              <input id="condition-field" name="condition" placeholder="Excellent" />
-            </div>
-            <div>
-              <label for="state-type">Type</label>
-              <select id="state-type" name="state-type">
-                <option value="used">Pre-owned</option>
-                <option value="new">New</option>
-              </select>
-            </div>
-          </div>
-
-          <label for="description">Description</label>
-          <textarea id="description" name="description" rows="5" placeholder="Material, provenance, measurements, flaws, etc."></textarea>
-
-          <label for="image-url">Image URL (optional if uploading file)</label>
-          <input id="image-url" name="image-url" type="url" placeholder="https://..." />
-
-          <label for="image-urls">Additional image URLs (one per line)</label>
-          <textarea id="image-urls" name="image-urls" rows="3" placeholder="https://...\nhttps://..."></textarea>
-
-          <label for="image-file">Upload images (you can select multiple)</label>
-          <input id="image-file" name="image-file" type="file" accept="image/*" multiple />
-
-          <label for="video-url">Video URL (optional)</label>
-          <input id="video-url" name="video-url" type="url" placeholder="https://youtube.com/... or hosted MP4 link" />
-
-          <div id="media-preview" class="media-preview"></div>
-
-          <button type="submit" class="button">Publish listing</button>
-        </form>
-        <div id="listing-state" class="status-line" aria-live="polite"></div>
-      </section>
-
-      <section class="panel">
-        <div class="section-head">
-          <div>
-            <h2>3. My listing submissions</h2>
-            <p>Track moderation result and see whether a listing is approved, pending, or rejected.</p>
-          </div>
-          <button id="refresh-my-listings" type="button" class="button button--ghost">Refresh</button>
+    <main>
+      <section class="asm-page-hero">
+        <img
+          src="https://archivesurmer.com/cdn/shop/files/IMG_4915.jpg?height=1359&v=1768567798"
+          alt="Sell With Us"
+        />
+        <div class="asm-page-hero__overlay"></div>
+        <div class="container asm-page-hero__content">
+          <h1>Sell With Us</h1>
+          <p>Give your pieces a second life while we handle onboarding, listing moderation, and payout flow.</p>
         </div>
-        <div id="my-listings" class="submission-list"></div>
       </section>
 
-      <section class="panel">
-        <div class="section-head">
-          <div>
-            <h2>4. Offer inbox</h2>
-            <p>Review buyer offers and accept, reject, or counter directly.</p>
+      <div class="container seller-layout">
+        <section class="panel">
+          <h2>1. Connect your Stripe account</h2>
+          <p>Every payout goes straight to your Stripe Express account.</p>
+          <form id="onboarding-form" class="stack">
+            <label for="seller-email">Seller email</label>
+            <input
+              id="seller-email"
+              name="seller-email"
+              type="email"
+              required
+              placeholder="you@brand.com"
+            />
+            <div class="button-row">
+              <button type="submit" class="button">Start onboarding</button>
+              <button id="check-status" type="button" class="button button--ghost">Check account status</button>
+            </div>
+          </form>
+          <div id="onboarding-state" class="status-line" aria-live="polite"></div>
+        </section>
+
+        <section class="panel">
+          <h2>2. Publish a listing</h2>
+          <p>Create a listing with rich media. Every submission is reviewed before going live.</p>
+          <form id="listing-form" class="stack">
+            <label for="title">Title</label>
+            <input id="title" name="title" required placeholder="Leather shoulder bag" />
+
+            <label for="brand">Brand</label>
+            <input id="brand" name="brand" required placeholder="Saint Laurent" />
+
+            <div class="grid-2">
+              <div>
+                <label for="price">Price (EUR)</label>
+                <input id="price" name="price" type="number" min="1" step="0.01" required placeholder="980" />
+              </div>
+              <div>
+                <label for="size">Size</label>
+                <input id="size" name="size" placeholder="IT 40 / One size" />
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div>
+                <label for="condition-field">Condition</label>
+                <input id="condition-field" name="condition" placeholder="Excellent" />
+              </div>
+              <div>
+                <label for="state-type">Type</label>
+                <select id="state-type" name="state-type">
+                  <option value="used">Pre-owned</option>
+                  <option value="new">New</option>
+                </select>
+              </div>
+            </div>
+
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="5"
+              placeholder="Material, provenance, measurements, flaws, etc."
+            ></textarea>
+
+            <label for="image-url">Image URL (optional if uploading file)</label>
+            <input id="image-url" name="image-url" type="url" placeholder="https://..." />
+
+            <label for="image-urls">Additional image URLs (one per line)</label>
+            <textarea id="image-urls" name="image-urls" rows="3" placeholder="https://...\nhttps://..."></textarea>
+
+            <label for="image-file">Upload images (you can select multiple)</label>
+            <input id="image-file" name="image-file" type="file" accept="image/*" multiple />
+
+            <label for="video-url">Video URL (optional)</label>
+            <input
+              id="video-url"
+              name="video-url"
+              type="url"
+              placeholder="https://youtube.com/... or hosted MP4 link"
+            />
+
+            <div id="media-preview" class="media-preview"></div>
+
+            <button type="submit" class="button">Publish listing</button>
+          </form>
+          <div id="listing-state" class="status-line" aria-live="polite"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h2>3. My listing submissions</h2>
+              <p>Track moderation result and see whether a listing is approved, pending, or rejected.</p>
+            </div>
+            <button id="refresh-my-listings" type="button" class="button button--ghost">Refresh</button>
           </div>
-          <button id="refresh-seller-offers" type="button" class="button button--ghost">Refresh</button>
-        </div>
-        <div id="seller-offers" class="submission-list"></div>
-      </section>
+          <div id="my-listings" class="submission-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h2>4. Offer inbox</h2>
+              <p>Review buyer offers and accept, reject, or counter directly.</p>
+            </div>
+            <button id="refresh-seller-offers" type="button" class="button button--ghost">Refresh</button>
+          </div>
+          <div id="seller-offers" class="submission-list"></div>
+        </section>
+      </div>
     </main>
+
+    <footer class="asm-footer">
+      <div class="container asm-footer-main">
+        <p>Receive exclusive offers and early access to new product drops.</p>
+        <form class="asm-newsletter-form" action="#">
+          <label for="seller-newsletter-email" class="visually-hidden">Email</label>
+          <input id="seller-newsletter-email" type="email" placeholder="Email address" />
+          <button type="button" class="button">Registrieren</button>
+        </form>
+      </div>
+      <div class="container asm-footer-utilities">
+        <p>&copy; 2026 Archive-sur-Mer Marketplace</p>
+        <a href="https://archivesurmer.com/policies/privacy-policy" target="_blank" rel="noreferrer noopener"
+          >Privacy policy</a
+        >
+      </div>
+    </footer>
 
     <script src="/marketplace.js"></script>
   </body>

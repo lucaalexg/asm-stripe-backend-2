@@ -6,7 +6,7 @@
     <title>Archive Sur Mer Marketplace</title>
     <meta
       name="description"
-      content="Archive Sur Mer marketplace for new and pre-owned designer-wear."
+      content="Curated new and pre-owned designer wear, authenticated before delivery."
     />
     <link
       rel="stylesheet"
@@ -15,104 +15,120 @@
     <link rel="stylesheet" href="/marketplace.css" />
   </head>
   <body data-page="marketplace">
-    <div class="top-note">
+    <aside class="asm-announcement-bar">
       <div class="container">
-        <p>
-          Curated luxury marketplace • authenticated sellers • secure payments via Stripe Connect
-        </p>
+        <p class="asm-announcement-text" data-asm-announcement>Up To 80% Of The Retail Price</p>
       </div>
-    </div>
+    </aside>
 
-    <header class="site-header">
-      <div class="container header-grid">
-        <div class="brand-lockup">
+    <header class="asm-header">
+      <div class="container asm-header-inner">
+        <nav class="asm-nav asm-nav-left">
+          <a href="/">Home</a>
+          <a href="#discover">Catalog</a>
+          <a href="#asm-values">About Us</a>
+          <a href="/sell-with-us.html">Sell With Us</a>
+        </nav>
+        <a href="/" class="asm-logo-link" aria-label="Archive-sur-Mer home">
           <img
-            class="asm-wordmark"
-            src="https://archivesurmer.com/cdn/shop/files/IMG_4061.jpg?v=1759936258&width=1200"
-            alt="Archive Sur Mer"
+            class="asm-logo"
+            src="https://archivesurmer.com/cdn/shop/files/IMG_4060.png?height=100&v=1759936229"
+            alt="Archive-sur-Mer"
           />
-          <h1 class="brand-title">Marketplace</h1>
-        </div>
-        <nav class="header-nav">
-          <a href="#discover">Women</a>
-          <a href="#discover">Men</a>
-          <a href="#discover">Bags</a>
-          <a href="#discover">Shoes</a>
-          <a href="/sell-with-us.html">Sell with us</a>
+        </a>
+        <nav class="asm-nav asm-nav-right">
+          <a href="https://archivesurmer.com/pages/contact" target="_blank" rel="noreferrer noopener"
+            >Contact</a
+          >
           <a href="/admin-review.html">Moderation</a>
+          <span class="asm-currency">CHF</span>
         </nav>
       </div>
     </header>
 
     <main>
-      <section class="hero container hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">NEW SEASON EDIT</p>
-          <h2>Luxury fashion with a second life.</h2>
-          <p>
-            Discover premium designer pieces from a vetted community. Make offers, save favorites,
-            and shop confidently.
-          </p>
-          <div class="button-row">
-            <a class="button" href="#discover">Shop now</a>
-            <a class="button button--ghost" href="/sell-with-us.html">Sell a piece</a>
-          </div>
-        </div>
-        <div class="hero-visual" aria-hidden="true">
-          <img
-            class="hero-media-main"
-            src="https://archivesurmer.com/cdn/shop/files/Photoroom_20260122_203735.png?v=1769111276&width=1600"
-            alt=""
+      <section class="asm-hero">
+        <video playsinline autoplay loop muted preload="metadata" aria-hidden="true">
+          <source
+            src="https://archivesurmer.com/cdn/shop/videos/c/vp/90febdd441754fb6a39bd7313a072dc3/90febdd441754fb6a39bd7313a072dc3.HD-720p-4.5Mbps-66418575.mp4?v=0"
+            type="video/mp4"
           />
-          <img
-            class="hero-media-side"
-            src="https://archivesurmer.com/cdn/shop/files/IMG_4501.jpg?v=1765227430"
-            alt=""
-          />
+        </video>
+        <div class="asm-hero-overlay"></div>
+        <div class="container asm-hero-content">
+          <a class="button button-secondary" href="#discover">Shop All</a>
         </div>
       </section>
 
-      <section class="container panel trust-strip">
-        <article>
-          <h3>Authenticity first</h3>
-          <p>Listings are moderated before going live.</p>
-        </article>
-        <article>
-          <h3>Direct offers</h3>
-          <p>Negotiate instantly with sellers in-platform.</p>
-        </article>
-        <article>
-          <h3>Secure checkout</h3>
-          <p>Payouts and payments handled via Stripe Connect.</p>
-        </article>
+      <section class="container asm-intro">
+        <h2>Winter Arrivals</h2>
+        <p>
+          Temperatures are dropping, and the season's finest pieces have just landed. Discover
+          exclusive styles from Moncler, AMI Paris, Acne Studios, and more premium brands.
+        </p>
+        <a class="button" href="#discover">Explore the marketplace</a>
       </section>
 
-      <section class="container panel">
-        <div class="section-head">
-          <div>
-            <h2>Shop by mood</h2>
-            <p>Jump into curated categories and trending houses.</p>
-          </div>
+      <section class="container asm-brand-section">
+        <h3><em>Shop By Brands</em></h3>
+        <div id="quick-filter-chips" class="asm-brand-grid">
+          <button class="asm-brand-card chip" data-chip-brand="Acne Studios" type="button">
+            <img
+              src="https://archivesurmer.com/cdn/shop/collections/E58FA251-5CA7-47CE-B367-E58309A58055.jpg?v=1767652586&width=1200"
+              alt="Acne Studios"
+            />
+            <span>Acne Studios</span>
+          </button>
+          <button class="asm-brand-card chip" data-chip-brand="Ami Paris" type="button">
+            <img
+              src="https://archivesurmer.com/cdn/shop/collections/A60B048B-1B6A-478D-BB4A-A78EE9F8BB5B.jpg?v=1767652677&width=1200"
+              alt="Ami Paris"
+            />
+            <span>Ami Paris</span>
+          </button>
+          <button class="asm-brand-card chip" data-chip-brand="Maison Margiela" type="button">
+            <img
+              src="https://archivesurmer.com/cdn/shop/collections/3C6C4052-1BD3-4928-81A4-477CC49CEDCE.jpg?v=1767652776&width=1200"
+              alt="Maison Margiela"
+            />
+            <span>Maison Margiela</span>
+          </button>
+          <button class="asm-brand-card chip" data-chip-brand="Moncler" type="button">
+            <img
+              src="https://archivesurmer.com/cdn/shop/collections/IMG-4633.jpg?v=1767652795&width=1200"
+              alt="Moncler"
+            />
+            <span>Moncler</span>
+          </button>
+          <button class="asm-brand-card chip" data-chip-brand="YSL" type="button">
+            <img
+              src="https://archivesurmer.com/cdn/shop/collections/IMG-4638.jpg?v=1767479123&width=1200"
+              alt="YSL"
+            />
+            <span>YSL</span>
+          </button>
         </div>
-        <div id="quick-filter-chips" class="chip-row">
-          <button class="chip" data-chip-brand="Chanel" type="button">Chanel</button>
-          <button class="chip" data-chip-brand="Hermes" type="button">Hermes</button>
-          <button class="chip" data-chip-brand="Dior" type="button">Dior</button>
-          <button class="chip" data-chip-brand="Saint Laurent" type="button">Saint Laurent</button>
-          <button class="chip" data-chip-condition="new" type="button">New with tags</button>
-          <button class="chip" data-chip-condition="used" type="button">Pre-owned gems</button>
-          <button class="chip" data-chip-sort="price_desc" data-chip-min-price="2000" type="button">High luxury</button>
-          <button class="chip" data-chip-sort="price_asc" data-chip-max-price="1000" type="button">Under €1000</button>
+        <div class="asm-chip-inline-row">
+          <button class="chip" data-chip-condition="new" type="button">New pieces</button>
+          <button class="chip" data-chip-condition="used" type="button">Pre-owned pieces</button>
+          <button class="chip" data-chip-sort="price_desc" data-chip-min-price="2000" type="button">
+            High luxury
+          </button>
+          <button class="chip" data-chip-sort="price_asc" data-chip-max-price="1000" type="button">
+            Under EUR 1000
+          </button>
         </div>
       </section>
 
       <section id="member-lounge" class="container panel member-lounge member-lounge--collapsed">
         <div class="section-head">
           <div>
-            <h2>Member lounge</h2>
+            <h2>Member Lounge</h2>
             <p>Create account and manage wishlist, offers, and saved searches.</p>
           </div>
-          <button id="toggle-member-lounge" class="button button--ghost" type="button">Open member lounge</button>
+          <button id="toggle-member-lounge" class="button button--ghost" type="button">
+            Open member lounge
+          </button>
         </div>
         <div class="member-layout">
           <section class="panel panel--inset">
@@ -152,7 +168,9 @@
                 <button class="button" type="submit">Connect account</button>
               </div>
               <div>
-                <button id="refresh-member-data" class="button button--ghost" type="button">Refresh member data</button>
+                <button id="refresh-member-data" class="button button--ghost" type="button">
+                  Refresh member data
+                </button>
               </div>
             </form>
             <div id="customer-context-status" class="status-line" aria-live="polite"></div>
@@ -231,28 +249,67 @@
         <div id="listing-grid" class="listing-grid"></div>
       </section>
 
-      <section class="container panel editorial-note">
-        <div>
-          <h2>Archive Sur Mer Standard</h2>
+      <section class="container asm-media-with-content">
+        <div class="asm-media-with-content__image">
+          <img
+            src="https://archivesurmer.com/cdn/shop/files/IMG_4915.jpg?height=1359&v=1768567798"
+            alt="Archive sur Mer editorial"
+          />
+        </div>
+        <div class="asm-media-with-content__content">
+          <h2>Sell With Us</h2>
+          <p><strong>Give Your Pieces a Second Life</strong></p>
           <p>
-            We blend luxury styling with strong marketplace mechanics: moderated catalog quality,
-            transparent seller negotiation, and trusted payout infrastructure.
+            <em
+              >At Archive sur Mer, we believe that exceptional pieces deserve more than a place at the
+              back of a wardrobe. They deserve to be seen, appreciated, and worn again.</em
+            >
           </p>
+          <a class="button" href="/sell-with-us.html">Send Your Products</a>
         </div>
       </section>
 
-      <section class="container panel cta-band">
-        <div>
-          <h2>Have exceptional pieces to sell?</h2>
-          <p>Join verified sellers and publish to an audience that knows designer fashion.</p>
-        </div>
-        <a class="button" href="/sell-with-us.html">Start selling</a>
+      <section id="asm-values" class="container asm-values">
+        <article class="panel">
+          <h2>Warehouse</h2>
+          <p>
+            We operate two warehouses, one in Zurich and one in Geneva. Some items are already in our
+            facilities, while others arrive only after a customer places an order so they can undergo our
+            full authenticity check.
+          </p>
+        </article>
+        <article class="panel">
+          <h2>Authenticity</h2>
+          <p>
+            At Archive sur Mer, authenticity is at the core of everything we do. Every item that passes
+            through our hands undergoes a thorough verification process before being released to the
+            customer.
+          </p>
+        </article>
+        <article class="panel">
+          <h2>Customer care</h2>
+          <p>
+            We're always on your side: keeping our loyal customers happy is our top priority and number
+            one goal.
+          </p>
+        </article>
       </section>
     </main>
 
-    <footer class="site-footer">
-      <div class="container">
-        <p>Archive Sur Mer marketplace infrastructure by Stripe Connect + Supabase.</p>
+    <footer class="asm-footer">
+      <div class="container asm-footer-main">
+        <p>Receive exclusive offers and early access to new product drops.</p>
+        <form class="asm-newsletter-form" action="#">
+          <label for="newsletter-email" class="visually-hidden">Email</label>
+          <input id="newsletter-email" type="email" placeholder="Email address" />
+          <button type="button" class="button">Registrieren</button>
+        </form>
+      </div>
+      <div class="container asm-footer-utilities">
+        <p>&copy; 2026 Archive-sur-Mer Marketplace</p>
+        <a href="https://archivesurmer.com/policies/privacy-policy" target="_blank" rel="noreferrer noopener"
+          >Privacy policy</a
+        >
       </div>
     </footer>
 
