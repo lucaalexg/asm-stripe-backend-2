@@ -176,7 +176,7 @@
 
   async function startCheckout(listingId, button, statusEl, buyerEmail = "") {
     button.disabled = true;
-    setStatus(statusEl, "Creating secure checkout...", "");
+    setStatus(statusEl, "Opening secure payment page...", "");
 
     try {
       const data = await requestJson(API.checkout, {
@@ -190,11 +190,11 @@
       });
 
       if (!data.url) {
-        throw new Error("Checkout URL missing in API response.");
+        throw new Error("Payment page URL missing in API response.");
       }
       window.location.href = data.url;
     } catch (error) {
-      setStatus(statusEl, error.message || "Could not start checkout.", "error");
+      setStatus(statusEl, error.message || "Could not start payment.", "error");
       button.disabled = false;
     }
   }
@@ -1196,12 +1196,12 @@
         return null;
       }
 
-      setStatus(onboardingState, "Checking Stripe account status...", "");
+      setStatus(onboardingState, "Checking payout account status...", "");
       try {
         const data = await requestJson(`${API.accountStatus}?email=${encodeURIComponent(email)}`);
 
         if (data.onboarding_complete) {
-          setStatus(onboardingState, "Stripe account is active. You can publish listings.", "ok");
+          setStatus(onboardingState, "Payout account is active. You can publish listings.", "ok");
         } else {
           const due = data.stripe && data.stripe.requirements_due ? data.stripe.requirements_due : [];
           const hint = due.length ? ` Pending fields: ${due.join(", ")}` : "";

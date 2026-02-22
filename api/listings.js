@@ -297,7 +297,7 @@ module.exports = async (req, res) => {
 
       if (!sellerResult.data.stripe_account_id) {
         return sendJson(res, 400, {
-          error: "Seller has no Stripe account. Complete onboarding first.",
+          error: "Seller has no payout account. Complete onboarding first.",
         });
       }
 
