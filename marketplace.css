@@ -111,97 +111,113 @@ a {
   font-size: 0.875rem;
 }
 
-.asm-hero {
-  position: relative;
-  min-height: 86svh;
-  background: var(--asm-dark);
+.vc-page {
+  padding: 24px 0 40px;
+}
+
+.vc-hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.vc-hero-copy {
+  display: grid;
+  gap: 12px;
+}
+
+.vc-kicker {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.vc-hero-copy h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+}
+
+.vc-hero-media {
+  padding: 0;
   overflow: hidden;
 }
 
-.asm-hero video {
-  position: absolute;
-  inset: 0;
+.vc-hero-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  min-height: 100%;
 }
 
-.asm-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.15));
+.vc-chip-row-wrap {
+  margin-bottom: 12px;
 }
 
-.asm-hero-content {
-  min-height: 86svh;
-  position: relative;
-  z-index: 1;
+.vc-chip-strip {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 0;
-}
-
-.asm-intro {
-  padding: 56px 0;
-  display: grid;
-  gap: 18px;
-  text-align: center;
-  border-bottom: 1px solid var(--asm-border);
-}
-
-.asm-intro h2 {
-  font-size: clamp(2.2rem, 6vw, 3.6rem);
-}
-
-.asm-intro p {
-  max-width: 72ch;
-  margin: 0 auto;
-}
-
-.asm-brand-section {
-  padding: 48px 0;
-  display: grid;
-  gap: 20px;
-}
-
-.asm-brand-section h3 {
-  text-align: center;
-  font-size: clamp(1.5rem, 4vw, 2.2rem);
-}
-
-.asm-brand-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  flex-wrap: wrap;
   gap: 8px;
 }
 
-.asm-brand-card {
-  border: 1px solid var(--asm-border);
-  background: #fff;
-  text-align: left;
-  padding: 0;
-  cursor: pointer;
+.vc-market-shell {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 12px;
+  align-items: start;
 }
 
-.asm-brand-card img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  display: block;
+.vc-filter-panel h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
-.asm-brand-card span {
-  display: block;
-  padding: 8px 10px 10px;
-  color: #000;
-  font-size: 0.875rem;
+.vc-results-column {
+  display: grid;
+  gap: 12px;
 }
 
-.asm-chip-inline-row {
+.vc-results-toolbar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.vc-results-toolbar h2 {
+  font-size: 1.35rem;
+  margin-bottom: 4px;
+}
+
+.vc-filter-actions {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.vc-listing-panel {
+  padding: 14px;
+}
+
+.vc-listing-grid {
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+}
+
+.vc-trust-row {
+  padding-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.vc-trust-row h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .chip {
@@ -209,6 +225,9 @@ a {
   background: #fff;
   color: #000;
   padding: 9px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  line-height: 1;
   cursor: pointer;
 }
 
@@ -312,14 +331,16 @@ a {
 }
 
 .filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-bottom: 16px;
+  display: block;
+  margin-bottom: 0;
   position: sticky;
   top: 96px;
   z-index: 20;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.filters .field {
+  margin-bottom: 10px;
 }
 
 .field label,
@@ -469,9 +490,9 @@ textarea {
 
 .listing-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 14px;
-  padding-bottom: 30px;
+  padding-bottom: 8px;
 }
 
 .listing-card {
@@ -483,8 +504,8 @@ textarea {
 }
 
 .listing-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
 }
 
 .listing-media-wrap {
@@ -769,15 +790,15 @@ textarea {
 }
 
 @media (max-width: 1024px) {
-  .asm-brand-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .asm-media-with-content {
+  .vc-hero {
     grid-template-columns: 1fr;
   }
 
-  .asm-values {
+  .vc-market-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .vc-trust-row {
     grid-template-columns: 1fr;
   }
 
@@ -787,7 +808,6 @@ textarea {
 }
 
 @media (max-width: 820px) {
-  .filters,
   .grid-2,
   .member-layout {
     grid-template-columns: 1fr;
@@ -802,6 +822,10 @@ textarea {
     box-shadow: none;
   }
 
+  .vc-results-toolbar {
+    flex-direction: column;
+  }
+
   .asm-header-inner {
     min-height: auto;
     grid-template-columns: 1fr;
@@ -813,10 +837,6 @@ textarea {
   .asm-nav {
     justify-content: center;
     text-align: center;
-  }
-
-  .asm-brand-grid {
-    grid-template-columns: 1fr 1fr;
   }
 
   .section-head,
@@ -835,7 +855,17 @@ textarea {
 }
 
 @media (max-width: 520px) {
-  .asm-brand-grid {
+  .vc-listing-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .vc-hero-copy {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .vc-listing-grid {
     grid-template-columns: 1fr;
   }
 }
