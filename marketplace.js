@@ -397,6 +397,14 @@
     }
 
     if (toggleMemberLoungeButton && memberLounge) {
+      const syncMemberLoungeToggleLabel = () => {
+        const collapsed = memberLounge.classList.contains("member-lounge--collapsed");
+        toggleMemberLoungeButton.textContent = collapsed
+          ? "Open member lounge"
+          : "Close member lounge";
+      };
+
+      syncMemberLoungeToggleLabel();
       toggleMemberLoungeButton.addEventListener("click", () => {
         const collapsed = memberLounge.classList.toggle("member-lounge--collapsed");
         toggleMemberLoungeButton.textContent = collapsed
