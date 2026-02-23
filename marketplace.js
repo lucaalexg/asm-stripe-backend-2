@@ -155,9 +155,28 @@
     };
   }
 
+  function initAnnouncementBar() {
+    const announcement = document.querySelector("[data-asm-announcement]");
+    if (!announcement) return;
+
+    const messages = [
+      "Up To 80% Of The Retail Price",
+      "Free Shipping On Orders Over 200.-",
+      "100% Authenticity",
+      "Trusted by over 500 Customers",
+    ];
+    let index = messages.indexOf(announcement.textContent.trim());
+    if (index < 0) index = 0;
+
+    window.setInterval(() => {
+      index = (index + 1) % messages.length;
+      announcement.textContent = messages[index];
+    }, 3200);
+  }
+
   async function startCheckout(listingId, button, statusEl, buyerEmail = "") {
     button.disabled = true;
-    setStatus(statusEl, "Creating secure checkout...", "");
+    setStatus(statusEl, "Opening secure payment page...", "");
 
     try {
       const data = await requestJson(API.checkout, {
@@ -171,11 +190,11 @@
       });
 
       if (!data.url) {
-        throw new Error("Checkout URL missing in API response.");
+        throw new Error("Payment page URL missing in API response.");
       }
       window.location.href = data.url;
     } catch (error) {
-      setStatus(statusEl, error.message || "Could not start checkout.", "error");
+      setStatus(statusEl, error.message || "Could not start payment.", "error");
       button.disabled = false;
     }
   }
@@ -378,6 +397,14 @@
     }
 
     if (toggleMemberLoungeButton && memberLounge) {
+      const syncMemberLoungeToggleLabel = () => {
+        const collapsed = memberLounge.classList.contains("member-lounge--collapsed");
+        toggleMemberLoungeButton.textContent = collapsed
+          ? "Open member lounge"
+          : "Close member lounge";
+      };
+
+      syncMemberLoungeToggleLabel();
       toggleMemberLoungeButton.addEventListener("click", () => {
         const collapsed = memberLounge.classList.toggle("member-lounge--collapsed");
         toggleMemberLoungeButton.textContent = collapsed
@@ -1177,12 +1204,12 @@
         return null;
       }
 
-      setStatus(onboardingState, "Checking Stripe account status...", "");
+      setStatus(onboardingState, "Checking payout account status...", "");
       try {
         const data = await requestJson(`${API.accountStatus}?email=${encodeURIComponent(email)}`);
 
         if (data.onboarding_complete) {
-          setStatus(onboardingState, "Stripe account is active. You can publish listings.", "ok");
+          setStatus(onboardingState, "Payout account is active. You can publish listings.", "ok");
         } else {
           const due = data.stripe && data.stripe.requirements_due ? data.stripe.requirements_due : [];
           const hint = due.length ? ` Pending fields: ${due.join(", ")}` : "";
@@ -1598,6 +1625,8 @@
       loadPendingQueue();
     }
   }
+
+  initAnnouncementBar();
 
   const pageType = document.body && document.body.dataset ? document.body.dataset.page : "";
   if (pageType === "marketplace") {

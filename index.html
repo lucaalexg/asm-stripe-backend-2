@@ -1,5 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Archive Sur Mer Marketplace</title>
+    <meta
+      name="description"
+      content="Curated new and pre-owned designer wear, authenticated before delivery."
+    />
+    <link
+      rel="stylesheet"
+      href="https://archivesurmer.com/cdn/shop/t/4/assets/base.css?v=119947873405298954601765488852"
+    />
+    <link rel="stylesheet" href="/marketplace.css" />
+  </head>
+  <body data-page="marketplace">
+    <aside class="asm-announcement-bar">
+      <div class="container">
+        <p class="asm-announcement-text" data-asm-announcement>Up To 80% Of The Retail Price</p>
+      </div>
+    </aside>
+
+    <header class="asm-header">
+      <div class="container asm-header-inner">
+        <nav class="asm-nav asm-nav-left">
+          <a href="/">Home</a>
+          <a href="#discover">Catalog</a>
+          <a href="#member-lounge">Create account</a>
+          <a href="#asm-values">About Us</a>
+          <a href="/sell-with-us.html">Sell With Us</a>
+        </nav>
+        <a href="/" class="asm-logo-link" aria-label="Archive-sur-Mer home">
+          <img
+            class="asm-logo"
+            src="https://archivesurmer.com/cdn/shop/files/IMG_4061.jpg?v=1759936258&width=1200"
+            alt="Archive-sur-Mer"
+          />
+        </a>
+        <nav class="asm-nav asm-nav-right">
+          <a href="https://archivesurmer.com/pages/contact" target="_blank" rel="noreferrer noopener"
+            >Contact</a
+          >
+          <a href="/admin-review.html">Moderation</a>
+          <span class="asm-currency">CHF</span>
+        </nav>
+      </div>
+    </header>
+
+    <main class="vc-page">
+      <section class="container vc-hero">
+        <div class="vc-hero-copy panel">
+          <p class="vc-kicker">Pre-owned & new designer fashion</p>
+          <h2>Shop the global luxury marketplace experience.</h2>
+          <p>
+            Discover authenticated pieces, save favorites, send offers, and complete purchases in a
+            seamless feed built for fast discovery.
+          </p>
+          <div class="button-row">
+            <a class="button" href="#discover">Start browsing</a>
+            <a class="button button--ghost" href="/sell-with-us.html">Sell your pieces</a>
+          </div>
+        </div>
+        <div class="vc-hero-media panel" aria-hidden="true">
+          <img
+            src="https://archivesurmer.com/cdn/shop/files/IMG_4915.jpg?height=1359&v=1768567798"
+            alt=""
+          />
+        </div>
+      </section>
+
+      <section class="container vc-chip-row-wrap">
+        <div id="quick-filter-chips" class="vc-chip-strip">
+          <button class="chip" data-chip-brand="Acne Studios" type="button">Acne Studios</button>
+          <button class="chip" data-chip-brand="Ami Paris" type="button">Ami Paris</button>
+          <button class="chip" data-chip-brand="Maison Margiela" type="button">Maison Margiela</button>
+          <button class="chip" data-chip-brand="Moncler" type="button">Moncler</button>
+          <button class="chip" data-chip-brand="YSL" type="button">YSL</button>
+          <button class="chip" data-chip-condition="new" type="button">New pieces</button>
+          <button class="chip" data-chip-condition="used" type="button">Pre-owned pieces</button>
+          <button class="chip" data-chip-sort="price_desc" data-chip-min-price="2000" type="button">
+            High luxury
+          </button>
+          <button class="chip" data-chip-sort="price_asc" data-chip-max-price="1000" type="button">
+            Under EUR 1000
+          </button>
+        </div>
+      </section>
+
+      <section class="container vc-market-shell">
+        <aside id="discover" class="panel filters vc-filter-panel">
+          <h3>Filters</h3>
+          <div class="field">
+            <label for="search">Search designer or piece</label>
+            <input id="search" type="search" placeholder="e.g. Prada loafers, Dior saddle..." />
+          </div>
+          <div class="field">
+            <label for="brand">Brand</label>
+            <input id="brand" type="text" placeholder="e.g. Gucci" />
+          </div>
+          <div class="field">
+            <label for="size-filter">Size</label>
+            <input id="size-filter" type="text" placeholder="e.g. IT 40" />
+          </div>
+          <div class="field">
+            <label for="condition">Condition</label>
+            <select id="condition">
+              <option value="all">All</option>
+              <option value="new">New</option>
+              <option value="used">Pre-owned</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="min-price">Min price (EUR)</label>
+            <input id="min-price" type="number" min="0" step="1" placeholder="100" />
+          </div>
+          <div class="field">
+            <label for="max-price">Max price (EUR)</label>
+            <input id="max-price" type="number" min="0" step="1" placeholder="2000" />
+          </div>
+          <div class="field">
+            <label for="sort">Sort</label>
+            <select id="sort">
+              <option value="newest">Newest</option>
+              <option value="price_asc">Price: low to high</option>
+              <option value="price_desc">Price: high to low</option>
+            </select>
+          </div>
+          <div class="vc-filter-actions">
+            <button id="refresh" class="button button--ghost" type="button">Refresh</button>
+            <button id="save-search" class="button button--ghost" type="button">Save search</button>
+            <button id="reset-filters" class="button button--ghost" type="button">Reset filters</button>
+          </div>
+        </aside>
+
+        <section class="vc-results-column">
+          <div class="vc-results-toolbar panel">
+            <div>
+              <h2>Marketplace</h2>
+              <p>A Vestiaire-style browsing flow with Archive Sur Mer brand identity.</p>
+            </div>
+            <a class="button button--ghost" href="/sell-with-us.html">Become a seller</a>
+          </div>
+
+          <section id="member-lounge" class="panel member-lounge member-lounge--collapsed">
+            <div class="section-head">
+              <div>
+                <h2>Member Lounge</h2>
+                <p>
+                  Customer account only (email + phone). No payout onboarding needed for buyers.
+                </p>
+              </div>
+              <button id="toggle-member-lounge" class="button button--ghost" type="button">
+                Open member lounge
+              </button>
+            </div>
+            <div class="member-layout">
+              <section class="panel panel--inset">
+                <h3>Create your customer account</h3>
+                <form id="customer-signup-form" class="signup-grid">
+                  <div>
+                    <label for="customer-name">Full name (optional)</label>
+                    <input id="customer-name" type="text" placeholder="Your name" />
+                  </div>
+                  <div>
+                    <label for="customer-email">Email</label>
+                    <input id="customer-email" type="email" required placeholder="you@example.com" />
+                  </div>
+                  <div>
+                    <label for="customer-phone">Phone number (international)</label>
+                    <input id="customer-phone" type="tel" required placeholder="+491751234567" />
+                  </div>
+                  <label class="checkbox-line">
+                    <input id="customer-marketing" type="checkbox" />
+                    <span>I want updates about new arrivals and drops.</span>
+                  </label>
+                  <div>
+                    <button class="button" type="submit">Create account</button>
+                  </div>
+                </form>
+                <div id="customer-signup-status" class="status-line" aria-live="polite"></div>
+              </section>
+
+              <section class="panel panel--inset">
+                <h3>Connect member tools</h3>
+                <form id="customer-context-form" class="signup-grid">
+                  <div>
+                    <label for="customer-context-email">Customer email</label>
+                    <input
+                      id="customer-context-email"
+                      type="email"
+                      required
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                  <div>
+                    <button class="button" type="submit">Connect account</button>
+                  </div>
+                  <div>
+                    <button id="refresh-member-data" class="button button--ghost" type="button">
+                      Refresh member data
+                    </button>
+                  </div>
+                </form>
+                <div id="customer-context-status" class="status-line" aria-live="polite"></div>
+
+                <div class="member-grid">
+                  <section>
+                    <h3>Wishlist</h3>
+                    <div id="wishlist-items" class="member-list"></div>
+                  </section>
+                  <section>
+                    <h3>My offers</h3>
+                    <div id="offer-items" class="member-list"></div>
+                  </section>
+                  <section>
+                    <h3>Saved searches</h3>
+                    <div id="saved-search-items" class="member-list"></div>
+                  </section>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="panel vc-listing-panel">
+            <div id="listing-status" class="status-line" aria-live="polite"></div>
+            <div id="listing-grid" class="listing-grid vc-listing-grid"></div>
+          </section>
+        </section>
+      </section>
+
+      <section id="asm-values" class="container vc-trust-row">
+        <article class="panel">
+          <h3>Warehouse</h3>
+          <p>Inventory is reviewed and processed through Zurich and Geneva operations.</p>
+        </article>
+        <article class="panel">
+          <h3>Authenticity</h3>
+          <p>Every item is verified before release to maintain luxury marketplace standards.</p>
+        </article>
+        <article class="panel">
+          <h3>Customer care</h3>
+          <p>Offer support and concierge-level service across all orders and negotiations.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="asm-footer">
+      <div class="container asm-footer-main">
+        <p>Receive exclusive offers and early access to new product drops.</p>
+        <form class="asm-newsletter-form" action="#">
+          <label for="newsletter-email" class="visually-hidden">Email</label>
+          <input id="newsletter-email" type="email" placeholder="Email address" />
+          <button type="button" class="button">Registrieren</button>
+        </form>
+      </div>
+      <div class="container asm-footer-utilities">
+        <p>&copy; 2026 Archive-sur-Mer Marketplace</p>
+        <a href="https://archivesurmer.com/policies/privacy-policy" target="_blank" rel="noreferrer noopener"
+          >Privacy policy</a
+        >
+      </div>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

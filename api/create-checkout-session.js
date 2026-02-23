@@ -133,7 +133,7 @@ module.exports = async (req, res) => {
     const connectedAccount = await stripe.accounts.retrieve(sellerResult.data.stripe_account_id);
     if (!connectedAccount.charges_enabled || !connectedAccount.payouts_enabled) {
       return sendJson(res, 409, {
-        error: "Seller Stripe account is not fully enabled yet.",
+        error: "Seller payout account is not fully enabled yet.",
       });
     }
 

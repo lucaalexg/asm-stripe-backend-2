@@ -6,7 +6,7 @@ module.exports = async (_req, res) => {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Archive Sur Mer | Stripe Onboarding</title>
+    <title>Archive Sur Mer | Seller Onboarding</title>
     <style>
       :root {
         color-scheme: light;
@@ -37,7 +37,7 @@ module.exports = async (_req, res) => {
   <body>
     <main>
       <h1>Onboarding submitted</h1>
-      <p>Your Stripe Connect details were received. Return to your seller page to check status and publish listings.</p>
+      <p>Your onboarding details were received. Return to your seller page to check status and publish listings.</p>
       <p><a href="/sell-with-us.html">Back to seller dashboard</a></p>
     </main>
   </body>
