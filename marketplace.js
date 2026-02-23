@@ -1626,7 +1626,26 @@
     }
   }
 
+  function initAccountMenu() {
+    const accountBtn = document.querySelector(".asm-account-btn");
+    const accountMenu = document.querySelector(".asm-account-menu");
+
+    if (!accountBtn || !accountMenu) return;
+
+    accountBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      accountMenu.classList.toggle("asm-dropdown-active");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!accountMenu.contains(e.target)) {
+        accountMenu.classList.remove("asm-dropdown-active");
+      }
+    });
+  }
+
   initAnnouncementBar();
+  initAccountMenu();
 
   const pageType = document.body && document.body.dataset ? document.body.dataset.page : "";
   if (pageType === "marketplace") {
