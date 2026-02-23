@@ -5,10 +5,18 @@
   --asm-dark: #383838;
   --asm-danger: #a12d2d;
   --asm-ok: #1f6e45;
+.navbar {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-* {
-  box-sizing: border-box;
+.navbar a {
+    color: #000000;
+    text-decoration: none;
+    margin: 0 15px;
 }
 
 body {
@@ -868,4 +876,39 @@ textarea {
   .vc-listing-grid {
     grid-template-columns: 1fr;
   }
+}
+.account-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.account-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.account-dropdown:hover .account-dropdown-content {
+    display: block;
+}
+
+.filter {
+    margin: 10px 0;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+    }
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
 }
