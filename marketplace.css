@@ -387,29 +387,109 @@ a {
 }
 
 .asm-footer {
-  border-top: 1px solid var(--asm-border);
+  background: #000;
+  color: #fff;
 }
 
-.asm-footer-main {
-  padding: 36px 0 20px;
+.asm-footer-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  align-items: center;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  padding: 48px 0;
+}
+
+.asm-footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.asm-footer-heading {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fff;
+}
+
+.asm-footer-desc {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.asm-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.asm-footer-links a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 180ms ease;
+}
+
+.asm-footer-links a:hover {
+  color: #fff;
 }
 
 .asm-newsletter-form {
   display: flex;
   gap: 8px;
+  margin-top: 8px;
 }
 
-.asm-footer-utilities {
-  border-top: 1px solid var(--asm-border);
-  padding: 16px 0 22px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
+.asm-newsletter-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.875rem;
+}
+
+.asm-newsletter-form input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.asm-newsletter-form input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.button--footer {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+  padding: 10px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 180ms ease;
+}
+
+.button--footer:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.asm-footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px 0;
+  background: #000;
+}
+
+.asm-footer-copyright {
+  margin: 0;
   font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .panel {
@@ -908,8 +988,9 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .asm-footer-main {
-    grid-template-columns: 1fr;
+  .asm-footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
   }
 }
 
@@ -969,8 +1050,10 @@ textarea {
     flex-direction: column;
   }
 
-  .asm-footer-utilities {
-    flex-direction: column;
+  .asm-footer-content {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 36px 0;
   }
 }
 
