@@ -185,6 +185,10 @@ Uploads image to Cloudinary:
 - `/about.html` -> marketplace brand and quality standards page
 - `/contact.html` -> internal support and contact page
 - `/privacy.html` -> internal privacy policy page
+- Legacy compatibility aliases:
+  - `/pages/contact` and `/pages/contact.html` -> internal `contact.html`
+  - `/blogs/news` and `/blogs/news.html` -> internal `about.html`
+  - `/policies/privacy-policy` and `/policies/privacy-policy.html` -> internal `privacy.html`
 
 ---
 
