@@ -34,14 +34,14 @@
             />
           </a>
           <nav class="asm-nav asm-nav-primary">
-            <a href="#discover">Catalog</a>
-            <a href="/sell-with-us.html">Sell</a>
-            <a href="#asm-values">About</a>
+            <a href="#discover" data-i18n="catalog">Catalog</a>
+            <a href="/sell-with-us.html" data-i18n="sell">Sell</a>
+            <a href="#asm-values" data-i18n="about">About</a>
           </nav>
         </div>
 
         <div class="asm-header-search">
-          <input type="search" class="asm-search-input" placeholder="Search designer or piece..." aria-label="Search products" />
+          <input type="search" class="asm-search-input" data-i18n-placeholder="search" placeholder="Search designer or piece..." aria-label="Search products" />
         </div>
 
         <div class="asm-nav asm-nav-secondary">
@@ -92,15 +92,15 @@
     <main class="vc-page">
       <section class="container vc-hero">
         <div class="vc-hero-copy panel">
-          <p class="vc-kicker">Pre-owned & new designer fashion</p>
-          <h2>Shop the global luxury marketplace experience.</h2>
-          <p>
+          <p class="vc-kicker" data-i18n="hero-kicker">Pre-owned & new designer fashion</p>
+          <h2 data-i18n="hero-title">Shop the global luxury marketplace experience.</h2>
+          <p data-i18n="hero-desc">
             Discover authenticated pieces, save favorites, send offers, and complete purchases in a
             seamless feed built for fast discovery.
           </p>
           <div class="button-row">
-            <a class="button" href="#discover">Start browsing</a>
-            <a class="button button--ghost" href="/sell-with-us.html">Sell your pieces</a>
+            <a class="button" href="#discover" data-i18n="start-browsing">Start browsing</a>
+            <a class="button button--ghost" href="/sell-with-us.html" data-i18n="sell-pieces">Sell your pieces</a>
           </div>
         </div>
         <div class="vc-hero-media panel" aria-hidden="true">
@@ -131,47 +131,47 @@
 
       <section class="container vc-market-shell">
         <aside id="discover" class="panel filters vc-filter-panel">
-          <h3>Filters</h3>
+          <h3 data-i18n="filters">Filters</h3>
           <div class="field">
-            <label for="search">Search designer or piece</label>
+            <label for="search" data-i18n="filter-search">Search designer or piece</label>
             <input id="search" type="search" placeholder="e.g. Prada loafers, Dior saddle..." />
           </div>
           <div class="field">
-            <label for="brand">Brand</label>
+            <label for="brand" data-i18n="filter-brand">Brand</label>
             <input id="brand" type="text" placeholder="e.g. Gucci" />
           </div>
           <div class="field">
-            <label for="size-filter">Size</label>
+            <label for="size-filter" data-i18n="filter-size">Size</label>
             <input id="size-filter" type="text" placeholder="e.g. IT 40" />
           </div>
           <div class="field">
-            <label for="condition">Condition</label>
+            <label for="condition" data-i18n="filter-condition">Condition</label>
             <select id="condition">
-              <option value="all">All</option>
-              <option value="new">New</option>
-              <option value="used">Pre-owned</option>
+              <option value="all" data-i18n="filter-all">All</option>
+              <option value="new" data-i18n="filter-new">New</option>
+              <option value="used" data-i18n="filter-used">Pre-owned</option>
             </select>
           </div>
           <div class="field">
-            <label for="min-price">Min price (EUR)</label>
+            <label for="min-price" data-i18n="filter-min-price">Min price (EUR)</label>
             <input id="min-price" type="number" min="0" step="1" placeholder="100" />
           </div>
           <div class="field">
-            <label for="max-price">Max price (EUR)</label>
+            <label for="max-price" data-i18n="filter-max-price">Max price (EUR)</label>
             <input id="max-price" type="number" min="0" step="1" placeholder="2000" />
           </div>
           <div class="field">
-            <label for="sort">Sort</label>
+            <label for="sort" data-i18n="filter-sort">Sort</label>
             <select id="sort">
-              <option value="newest">Newest</option>
-              <option value="price_asc">Price: low to high</option>
-              <option value="price_desc">Price: high to low</option>
+              <option value="newest" data-i18n="filter-newest">Newest</option>
+              <option value="price_asc" data-i18n="filter-price-asc">Price: low to high</option>
+              <option value="price_desc" data-i18n="filter-price-desc">Price: high to low</option>
             </select>
           </div>
           <div class="vc-filter-actions">
-            <button id="refresh" class="button button--ghost" type="button">Refresh</button>
-            <button id="save-search" class="button button--ghost" type="button">Save search</button>
-            <button id="reset-filters" class="button button--ghost" type="button">Reset filters</button>
+            <button id="refresh" class="button button--ghost" type="button" data-i18n="refresh">Refresh</button>
+            <button id="save-search" class="button button--ghost" type="button" data-i18n="save-search">Save search</button>
+            <button id="reset-filters" class="button button--ghost" type="button" data-i18n="reset-filters">Reset filters</button>
           </div>
         </aside>
 
