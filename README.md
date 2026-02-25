@@ -182,6 +182,9 @@ Uploads image to Cloudinary:
 - `/` -> buyer marketplace page (customer registration, member tools, wishlist/offers/saved searches/order history, advanced filters, direct Stripe Checkout)
 - `/sell-with-us.html` -> seller onboarding, rich-media submission, offer inbox, and sales tracking
 - `/admin-review.html` -> approve/decline queue for your moderation team
+- `/about.html` -> marketplace brand and quality standards page
+- `/contact.html` -> internal support and contact page
+- `/privacy.html` -> internal privacy policy page
 
 ---
 
