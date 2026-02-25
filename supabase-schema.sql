@@ -181,6 +181,7 @@ create table if not exists public.listings (
   status text not null default 'active' check (status in ('active', 'reserved', 'sold', 'archived')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+  buyer_email text,
   sold_at timestamptz,
   checkout_session_id text
 );
@@ -202,6 +203,9 @@ alter table if exists public.listings
 
 alter table if exists public.listings
   add column if not exists moderated_at timestamptz;
+
+alter table if exists public.listings
+  add column if not exists buyer_email text;
 
 do $$
 begin
@@ -264,6 +268,9 @@ create index if not exists idx_listings_brand
 
 create index if not exists idx_listings_seller
   on public.listings (seller_id);
+
+create index if not exists idx_listings_buyer_email_status
+  on public.listings (buyer_email, status, sold_at desc);
 
 create index if not exists idx_listings_moderation_status
   on public.listings (moderation_status, created_at desc);

@@ -9,6 +9,7 @@ This repository now includes:
 - Supabase-powered listings catalog
 - Wishlist (save items) and saved search presets
 - Offer and counter-offer negotiation flow
+- Buyer order history + seller sales feed
 - Advanced marketplace filtering (brand, size, condition, price, sorting)
 - Listing moderation workflow (pending/approved/rejected)
 - Multi-image + video listing media support
@@ -59,6 +60,7 @@ Tables created:
 - `media_urls` and `video_url`
 - `moderation_status`, `moderation_reason`, `moderated_at`
 - `approved_media_urls` (first approved image forced onto white background canvas for Cloudinary URLs)
+- `buyer_email` (captured at checkout completion for order history)
 
 ---
 
@@ -133,6 +135,14 @@ Offer negotiation API:
   - seller: `accept`, `reject`, `counter`
   - buyer: `cancel`, `accept_counter`
 
+### `GET /api/orders`
+
+Order feed API:
+
+- buyer scope via `customer_email` (returns completed purchases)
+- seller scope via `seller_email` (returns completed sales)
+- pagination via `limit`, `offset`
+
 ### `POST /api/create-checkout-session`
 
 Creates Stripe Checkout session and routes payout to seller connected account.
@@ -151,7 +161,7 @@ Input:
 
 Handles Stripe webhook events:
 
-- `checkout.session.completed` -> listing becomes `sold`
+- `checkout.session.completed` -> listing becomes `sold` and stores buyer email
 - `checkout.session.expired` / `checkout.session.async_payment_failed` -> listing goes back to `active`
 
 ### `POST /api/upload-image`
@@ -169,8 +179,8 @@ Uploads image to Cloudinary:
 
 ## 4) Frontend routes
 
-- `/` -> buyer marketplace page (customer registration, member tools, wishlist/offers/saved searches, advanced filters, direct Stripe Checkout)
-- `/sell-with-us.html` -> seller onboarding, rich-media submission, and submission status tracking
+- `/` -> buyer marketplace page (customer registration, member tools, wishlist/offers/saved searches/order history, advanced filters, direct Stripe Checkout)
+- `/sell-with-us.html` -> seller onboarding, rich-media submission, offer inbox, and sales tracking
 - `/admin-review.html` -> approve/decline queue for your moderation team
 
 ---

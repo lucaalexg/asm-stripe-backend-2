@@ -26,7 +26,7 @@
         <nav class="asm-nav asm-nav-left">
           <a href="/">Home</a>
           <a href="#discover">Catalog</a>
-          <a href="#member-lounge">Create account</a>
+          <a href="#member-lounge">Customer account</a>
           <a href="#asm-values">About Us</a>
           <a href="/sell-with-us.html">Sell With Us</a>
         </nav>
@@ -51,10 +51,10 @@
       <section class="container vc-hero">
         <div class="vc-hero-copy panel">
           <p class="vc-kicker">Pre-owned & new designer fashion</p>
-          <h2>Shop the global luxury marketplace experience.</h2>
+          <h2>Shop a premium luxury resale and retail marketplace.</h2>
           <p>
-            Discover authenticated pieces, save favorites, send offers, and complete purchases in a
-            seamless feed built for fast discovery.
+            Discover authenticated pieces, save favorites, negotiate offers, and track orders in one
+            seamless buying journey.
           </p>
           <div class="button-row">
             <a class="button" href="#discover">Start browsing</a>
@@ -137,7 +137,7 @@
           <div class="vc-results-toolbar panel">
             <div>
               <h2>Marketplace</h2>
-              <p>A Vestiaire-style browsing flow with Archive Sur Mer brand identity.</p>
+              <p>Professional resale flow with Archive Sur Mer brand identity.</p>
             </div>
             <a class="button button--ghost" href="/sell-with-us.html">Become a seller</a>
           </div>
@@ -146,17 +146,15 @@
             <div class="section-head">
               <div>
                 <h2>Member Lounge</h2>
-                <p>
-                  Customer account only (email + phone). No payout onboarding needed for buyers.
-                </p>
+                <p>Buyer accounts use standard contact details only. Seller payout setup is separate.</p>
               </div>
               <button id="toggle-member-lounge" class="button button--ghost" type="button">
-                Open member lounge
+                Open member dashboard
               </button>
             </div>
             <div class="member-layout">
               <section class="panel panel--inset">
-                <h3>Create your customer account</h3>
+                <h3>Create your buyer account</h3>
                 <form id="customer-signup-form" class="signup-grid">
                   <div>
                     <label for="customer-name">Full name (optional)</label>
@@ -175,14 +173,14 @@
                     <span>I want updates about new arrivals and drops.</span>
                   </label>
                   <div>
-                    <button class="button" type="submit">Create account</button>
+                    <button class="button" type="submit">Create buyer account</button>
                   </div>
                 </form>
                 <div id="customer-signup-status" class="status-line" aria-live="polite"></div>
               </section>
 
               <section class="panel panel--inset">
-                <h3>Connect member tools</h3>
+                <h3>Connect your member dashboard</h3>
                 <form id="customer-context-form" class="signup-grid">
                   <div>
                     <label for="customer-context-email">Customer email</label>
@@ -214,6 +212,10 @@
                     <div id="offer-items" class="member-list"></div>
                   </section>
                   <section>
+                    <h3>My orders</h3>
+                    <div id="order-items" class="member-list"></div>
+                  </section>
+                  <section>
                     <h3>Saved searches</h3>
                     <div id="saved-search-items" class="member-list"></div>
                   </section>
@@ -240,7 +242,7 @@
         </article>
         <article class="panel">
           <h3>Customer care</h3>
-          <p>Offer support and concierge-level service across all orders and negotiations.</p>
+          <p>Dedicated support with premium service across orders, offers, and post-sale questions.</p>
         </article>
       </section>
     </main>
