@@ -138,10 +138,20 @@
 
   function formatCurrency(priceCents, currencyCode = "eur") {
     try {
+      const priceInMainUnit = (priceCents || 0) / 100;
+
+      // Use Localization API if available
+      if (typeof Localization !== "undefined") {
+        const normalizedCurrency = String(currencyCode).toUpperCase();
+        const convertedPrice = Localization.convertPrice(priceInMainUnit, normalizedCurrency);
+        return Localization.formatPrice(convertedPrice);
+      }
+
+      // Fallback to standard formatting
       return new Intl.NumberFormat("en-GB", {
         style: "currency",
         currency: String(currencyCode).toUpperCase(),
-      }).format((priceCents || 0) / 100);
+      }).format(priceInMainUnit);
     } catch (_error) {
       return `${(priceCents || 0) / 100} ${String(currencyCode || "eur").toUpperCase()}`;
     }
@@ -1643,6 +1653,26 @@
       }
     });
   }
+
+  // Handle localization changes (language and currency switching)
+  function handleLocalizationChange() {
+    const pageType = document.body && document.body.dataset ? document.body.dataset.page : "";
+
+    // Refresh the page to apply translations and currency changes
+    // In a more advanced implementation, you could selectively update elements
+    if (pageType === "marketplace") {
+      // The listings need to be re-rendered with new currency conversion
+      // This is handled by the marketplace page's load functions
+      const listingGrid = document.getElementById("listing-grid");
+      if (listingGrid && window.marketplaceState && window.marketplaceState.load) {
+        // Reload listings with new currency
+        window.marketplaceState.load();
+      }
+    }
+  }
+
+  // Listen for localization changes
+  document.addEventListener("localizationChanged", handleLocalizationChange);
 
   initAnnouncementBar();
   initAccountMenu();

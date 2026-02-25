@@ -13,6 +13,8 @@
       href="https://archivesurmer.com/cdn/shop/t/4/assets/base.css?v=119947873405298954601765488852"
     />
     <link rel="stylesheet" href="/marketplace.css" />
+    <script src="/localization.js"></script>
+    <script src="/localization-ui.js"></script>
   </head>
   <body data-page="admin">
     <aside class="asm-announcement-bar">
@@ -37,7 +39,31 @@
         </a>
         <nav class="asm-nav asm-nav-right">
           <a href="/">Marketplace</a>
-          <span class="asm-currency">CHF</span>
+
+          <div class="asm-language-menu">
+            <button class="asm-language-btn" aria-label="Language selection" title="Language">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                <path d="M2 12h20"></path>
+              </svg>
+              <span id="current-language" class="asm-current-value">EN</span>
+            </button>
+            <div class="asm-language-dropdown" id="language-dropdown"></div>
+          </div>
+
+          <div class="asm-currency-menu">
+            <button class="asm-currency-btn" aria-label="Currency selection" title="Currency">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="8"></circle>
+                <path d="M12 6v12M15 9h-6a3 3 0 0 0 0 6h6a3 3 0 0 1 0 6h-6"></path>
+              </svg>
+              <span id="current-currency" class="asm-current-value">CHF</span>
+            </button>
+            <div class="asm-currency-dropdown" id="currency-dropdown"></div>
+          </div>
+
+          <span class="asm-currency" id="header-currency">CHF</span>
         </nav>
       </div>
     </header>
@@ -94,44 +120,44 @@
     <footer class="asm-footer">
       <div class="container asm-footer-content">
         <div class="asm-footer-column">
-          <h4 class="asm-footer-heading">Exklusive Angebote</h4>
-          <p class="asm-footer-desc">Exklusive Angebote und frühen Zugang zu neuen Stücken erhalten</p>
+          <h4 class="asm-footer-heading" data-i18n="exclusive-offers">Exclusive Offers</h4>
+          <p class="asm-footer-desc" data-i18n="exclusive-offers-desc">Get exclusive offers and early access to new pieces</p>
           <form class="asm-newsletter-form" action="#">
             <label for="admin-newsletter-email" class="visually-hidden">Email</label>
-            <input id="admin-newsletter-email" type="email" placeholder="Email address" required />
-            <button type="button" class="button button--footer">Subscribe</button>
+            <input id="admin-newsletter-email" type="email" data-i18n-placeholder="search" placeholder="Search designer or piece..." required />
+            <button type="button" class="button button--footer" data-i18n="subscribe">Subscribe</button>
           </form>
         </div>
 
         <div class="asm-footer-column">
-          <h4 class="asm-footer-heading">Über Archive</h4>
+          <h4 class="asm-footer-heading" data-i18n="about-archive">About Archive</h4>
           <ul class="asm-footer-links">
-            <li><a href="/">Warehouse</a></li>
-            <li><a href="/">Authenticity</a></li>
-            <li><a href="/">Customer Care</a></li>
+            <li><a href="/" data-i18n="warehouse">Warehouse</a></li>
+            <li><a href="/" data-i18n="authenticity">Authenticity</a></li>
+            <li><a href="/" data-i18n="customer-care">Customer Care</a></li>
           </ul>
         </div>
 
         <div class="asm-footer-column">
-          <h4 class="asm-footer-heading">Hilfe & Support</h4>
+          <h4 class="asm-footer-heading" data-i18n="help-support">Help & Support</h4>
           <ul class="asm-footer-links">
-            <li><a href="https://archivesurmer.com/pages/contact" target="_blank" rel="noreferrer noopener">Contact</a></li>
-            <li><a href="/">Create Account</a></li>
+            <li><a href="https://archivesurmer.com/pages/contact" target="_blank" rel="noreferrer noopener" data-i18n="contact">Contact</a></li>
+            <li><a href="/" data-i18n="create-account-link">Create Account</a></li>
           </ul>
         </div>
 
         <div class="asm-footer-column">
-          <h4 class="asm-footer-heading">Rechtliches</h4>
+          <h4 class="asm-footer-heading" data-i18n="legal">Legal</h4>
           <ul class="asm-footer-links">
-            <li><a href="https://archivesurmer.com/policies/privacy-policy" target="_blank" rel="noreferrer noopener">Privacy Policy</a></li>
-            <li><a href="https://archivesurmer.com/policies/terms-of-service" target="_blank" rel="noreferrer noopener">Terms</a></li>
+            <li><a href="https://archivesurmer.com/policies/privacy-policy" target="_blank" rel="noreferrer noopener" data-i18n="privacy-policy">Privacy Policy</a></li>
+            <li><a href="https://archivesurmer.com/policies/terms-of-service" target="_blank" rel="noreferrer noopener" data-i18n="terms">Terms</a></li>
           </ul>
         </div>
       </div>
 
       <div class="asm-footer-bottom">
         <div class="container">
-          <p class="asm-footer-copyright">&copy; 2026 Archive-sur-Mer Marketplace</p>
+          <p class="asm-footer-copyright" data-i18n="copyright">© 2026 Archive-sur-Mer Marketplace</p>
         </div>
       </div>
     </footer>
