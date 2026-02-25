@@ -175,6 +175,54 @@
     }, 3200);
   }
 
+  function resolveLegacyArchiveLink(hrefValue) {
+    if (!hrefValue) return "";
+
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(String(hrefValue).trim(), window.location.href);
+    } catch (_error) {
+      return "";
+    }
+
+    const host = parsedUrl.hostname.replace(/^www\./i, "").toLowerCase();
+    if (host !== "archivesurmer.com") return "";
+
+    const path = parsedUrl.pathname.toLowerCase();
+    if (path === "/" || path === "/home") return "index.html";
+    if (path.startsWith("/pages/contact")) return "contact.html";
+    if (path.startsWith("/policies/privacy-policy")) return "privacy.html";
+    if (path.startsWith("/blogs/news") || path.startsWith("/pages/about")) return "about.html";
+    if (path.startsWith("/collections") || path.startsWith("/products")) return "index.html#discover";
+    return "index.html";
+  }
+
+  function initInternalNavigationGuard() {
+    const anchorNodes = document.querySelectorAll('a[href]');
+    anchorNodes.forEach((anchor) => {
+      const rewritten = resolveLegacyArchiveLink(anchor.getAttribute("href"));
+      if (!rewritten) return;
+      anchor.setAttribute("href", rewritten);
+      anchor.removeAttribute("target");
+      anchor.removeAttribute("rel");
+    });
+
+    // Capture-phase handler: blocks legacy external nav even on cached markup.
+    document.addEventListener(
+      "click",
+      (event) => {
+        const anchor = event.target.closest && event.target.closest("a[href]");
+        if (!anchor) return;
+        const rewritten = resolveLegacyArchiveLink(anchor.href || anchor.getAttribute("href"));
+        if (!rewritten) return;
+        event.preventDefault();
+        event.stopPropagation();
+        window.location.href = rewritten;
+      },
+      true
+    );
+  }
+
   async function startCheckout(listingId, button, statusEl, buyerEmail = "") {
     button.disabled = true;
     setStatus(statusEl, "Opening secure payment page...", "");
@@ -1741,6 +1789,7 @@
     }
   }
 
+  initInternalNavigationGuard();
   initAnnouncementBar();
 
   const pageType = document.body && document.body.dataset ? document.body.dataset.page : "";
