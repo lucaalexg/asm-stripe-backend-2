@@ -187,6 +187,13 @@ module.exports = async (req, res) => {
       productData.images = [primaryImage];
     }
 
+    const sessionMetadata = {
+      listing_id: listing.id,
+      seller_id: sellerResult.data.id,
+      platform: "archive-sur-mer",
+      ...(buyerEmail ? { buyer_email: buyerEmail } : {}),
+    };
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       customer_email: buyerEmail || undefined,
@@ -207,17 +214,9 @@ module.exports = async (req, res) => {
         transfer_data: {
           destination: sellerResult.data.stripe_account_id,
         },
-        metadata: {
-          listing_id: listing.id,
-          seller_id: sellerResult.data.id,
-          platform: "archive-sur-mer",
-        },
+        metadata: sessionMetadata,
       },
-      metadata: {
-        listing_id: listing.id,
-        seller_id: sellerResult.data.id,
-        platform: "archive-sur-mer",
-      },
+      metadata: sessionMetadata,
     });
 
     checkoutSessionId = session.id;

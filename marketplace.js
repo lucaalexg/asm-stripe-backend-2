@@ -7,6 +7,7 @@
     moderation: "/api/moderate-listings",
     onboarding: "/api/start-onboarding",
     offers: "/api/offers",
+    orders: "/api/orders",
     savedSearches: "/api/saved-searches",
     uploadImage: "/api/upload-image",
     wishlist: "/api/wishlist",
@@ -174,6 +175,54 @@
     }, 3200);
   }
 
+  function resolveLegacyArchiveLink(hrefValue) {
+    if (!hrefValue) return "";
+
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(String(hrefValue).trim(), window.location.href);
+    } catch (_error) {
+      return "";
+    }
+
+    const host = parsedUrl.hostname.replace(/^www\./i, "").toLowerCase();
+    if (host !== "archivesurmer.com") return "";
+
+    const path = parsedUrl.pathname.toLowerCase();
+    if (path === "/" || path === "/home") return "index.html";
+    if (path.startsWith("/pages/contact")) return "contact.html";
+    if (path.startsWith("/policies/privacy-policy")) return "privacy.html";
+    if (path.startsWith("/blogs/news") || path.startsWith("/pages/about")) return "about.html";
+    if (path.startsWith("/collections") || path.startsWith("/products")) return "index.html#discover";
+    return "index.html";
+  }
+
+  function initInternalNavigationGuard() {
+    const anchorNodes = document.querySelectorAll('a[href]');
+    anchorNodes.forEach((anchor) => {
+      const rewritten = resolveLegacyArchiveLink(anchor.getAttribute("href"));
+      if (!rewritten) return;
+      anchor.setAttribute("href", rewritten);
+      anchor.removeAttribute("target");
+      anchor.removeAttribute("rel");
+    });
+
+    // Capture-phase handler: blocks legacy external nav even on cached markup.
+    document.addEventListener(
+      "click",
+      (event) => {
+        const anchor = event.target.closest && event.target.closest("a[href]");
+        if (!anchor) return;
+        const rewritten = resolveLegacyArchiveLink(anchor.href || anchor.getAttribute("href"));
+        if (!rewritten) return;
+        event.preventDefault();
+        event.stopPropagation();
+        window.location.href = rewritten;
+      },
+      true
+    );
+  }
+
   async function startCheckout(listingId, button, statusEl, buyerEmail = "") {
     button.disabled = true;
     setStatus(statusEl, "Opening secure payment page...", "");
@@ -339,6 +388,7 @@
     const refreshMemberDataButton = $("refresh-member-data");
     const wishlistItems = $("wishlist-items");
     const offerItems = $("offer-items");
+    const orderItems = $("order-items");
     const savedSearchItems = $("saved-search-items");
     const searchInput = $("search");
     const brandInput = $("brand");
@@ -400,16 +450,16 @@
       const syncMemberLoungeToggleLabel = () => {
         const collapsed = memberLounge.classList.contains("member-lounge--collapsed");
         toggleMemberLoungeButton.textContent = collapsed
-          ? "Open member lounge"
-          : "Close member lounge";
+          ? "Open member dashboard"
+          : "Close member dashboard";
       };
 
       syncMemberLoungeToggleLabel();
       toggleMemberLoungeButton.addEventListener("click", () => {
         const collapsed = memberLounge.classList.toggle("member-lounge--collapsed");
         toggleMemberLoungeButton.textContent = collapsed
-          ? "Open member lounge"
-          : "Close member lounge";
+          ? "Open member dashboard"
+          : "Close member dashboard";
       });
     }
 
@@ -468,7 +518,7 @@
       if (!value) {
         setStatus(
           customerContextStatus,
-          "Connect your customer email first to use wishlist, offers, and saved searches.",
+          "Connect your customer email first to use wishlist, offers, orders, and saved searches.",
           "error"
         );
         return "";
@@ -520,7 +570,7 @@
         return;
       }
       if (!items || items.length === 0) {
-        offerItems.innerHTML = `<div class="member-item"><p>No offers yet.</p></div>`;
+        offerItems.innerHTML = `<div class="member-item"><p>No active offers yet.</p></div>`;
         return;
       }
       offerItems.innerHTML = items
@@ -550,6 +600,45 @@
                 : ""
             }
             <div class="button-row">${counterAction}${cancelAction}</div>
+          </article>`;
+        })
+        .join("");
+    }
+
+    function renderOrders(items) {
+      if (!orderItems) return;
+      if (!state.customerEmail) {
+        orderItems.innerHTML = `<div class="member-item"><p>Connect your account to view your orders.</p></div>`;
+        return;
+      }
+      if (!items || items.length === 0) {
+        orderItems.innerHTML = `<div class="member-item"><p>No completed orders yet.</p></div>`;
+        return;
+      }
+
+      orderItems.innerHTML = items
+        .map((order) => {
+          const soldLabel = order.sold_at
+            ? new Date(order.sold_at).toLocaleDateString("en-GB", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
+            : "Date unavailable";
+          const sellerLabel = order.seller_email ? `Seller: ${escapeHtml(order.seller_email)}` : "";
+          const image = parseHttpUrl(order.image_url);
+          return `<article class="member-item">
+            ${
+              image
+                ? `<img class="listing-media listing-media--approved" src="${escapeHtml(image)}" alt="${escapeHtml(
+                    order.brand || ""
+                  )} ${escapeHtml(order.title || "Order item")}" />`
+                : ""
+            }
+            <p><strong>${escapeHtml(order.brand || "")} ${escapeHtml(order.title || "Order item")}</strong></p>
+            <p>${formatCurrency(order.price_cents, order.currency)} • ${escapeHtml(order.condition || "N/A")}</p>
+            <p>Completed: ${escapeHtml(soldLabel)}</p>
+            ${sellerLabel ? `<p>${sellerLabel}</p>` : ""}
           </article>`;
         })
         .join("");
@@ -613,6 +702,17 @@
       renderOffers(data.offers || []);
     }
 
+    async function loadOrders() {
+      if (!state.customerEmail) {
+        renderOrders([]);
+        return;
+      }
+      const data = await requestJson(
+        `${API.orders}?customer_email=${encodeURIComponent(state.customerEmail)}&limit=30`
+      );
+      renderOrders(data.orders || []);
+    }
+
     async function loadSavedSearches() {
       if (!state.customerEmail) {
         renderSavedSearches([]);
@@ -626,11 +726,11 @@
 
     async function refreshMemberData() {
       try {
-        await Promise.all([loadWishlist(), loadOffers(), loadSavedSearches()]);
+        await Promise.all([loadWishlist(), loadOffers(), loadOrders(), loadSavedSearches()]);
       } catch (error) {
         setStatus(
           customerContextStatus,
-          error.message || "Could not load member data right now.",
+          error.message || "Member data could not be loaded right now.",
           "error"
         );
       }
@@ -651,19 +751,19 @@
       if (state.maxPrice) query.set("max_price", state.maxPrice);
       if (state.sort) query.set("sort", state.sort);
 
-      setStatus(status, "Loading curated listings...", "");
+      setStatus(status, "Loading marketplace inventory...", "");
 
       try {
         const data = await requestJson(`${API.listings}?${query.toString()}`);
         const listings = Array.isArray(data.listings) ? data.listings : [];
 
         if (listings.length === 0) {
-          grid.innerHTML = `<div class="panel">No listings match your filters yet.</div>`;
-          setStatus(status, "0 results", "");
+          grid.innerHTML = `<div class="panel">No listings currently match your filters.</div>`;
+          setStatus(status, "0 items found", "");
         } else {
           grid.innerHTML = listings.map(listingCardTemplate).join("");
           wireListingCardMedia(grid);
-          setStatus(status, `${listings.length} listings`, "");
+          setStatus(status, `${listings.length} items found`, "");
         }
       } catch (error) {
         grid.innerHTML = "";
@@ -776,8 +876,8 @@
           setStatus(
             customerSignupStatus,
             data.created
-              ? "Account created. You can now browse and buy designer pieces."
-              : "Profile updated. You are ready to shop.",
+              ? "Buyer account created successfully. You can now browse and place orders."
+              : "Profile updated successfully. Your account is ready for checkout.",
             "ok"
           );
         } catch (error) {
@@ -802,7 +902,7 @@
         }
         state.customerEmail = email;
         window.localStorage.setItem(memberStorageKey, email);
-        setStatus(customerContextStatus, "Account connected.", "ok");
+        setStatus(customerContextStatus, "Member account connected.", "ok");
         refreshMemberData();
       });
     }
@@ -1061,7 +1161,7 @@
   function renderSellerListingSummary(listings, container) {
     if (!container) return;
     if (!Array.isArray(listings) || listings.length === 0) {
-      container.innerHTML = `<div class="submission-item">No submissions yet.</div>`;
+      container.innerHTML = `<div class="submission-item">No listing submissions yet.</div>`;
       return;
     }
 
@@ -1092,7 +1192,7 @@
   function renderSellerOfferSummary(offers, container) {
     if (!container) return;
     if (!Array.isArray(offers) || offers.length === 0) {
-      container.innerHTML = `<div class="submission-item">No offers yet.</div>`;
+      container.innerHTML = `<div class="submission-item">No buyer offers yet.</div>`;
       return;
     }
 
@@ -1152,6 +1252,40 @@
       .join("");
   }
 
+  function renderSellerSales(orders, container) {
+    if (!container) return;
+    if (!Array.isArray(orders) || orders.length === 0) {
+      container.innerHTML = `<div class="submission-item">No completed sales yet.</div>`;
+      return;
+    }
+
+    container.innerHTML = orders
+      .map((order) => {
+        const soldLabel = order.sold_at
+          ? new Date(order.sold_at).toLocaleDateString("en-GB", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })
+          : "Date unavailable";
+        const orderRef = String(order.id || "").slice(0, 12).toUpperCase();
+        return `<article class="submission-item">
+          <div class="submission-head">
+            <div>
+              <h3>${escapeHtml(order.brand || "")} ${escapeHtml(order.title || "Order item")}</h3>
+              <p class="submission-meta">
+                ${formatCurrency(order.price_cents, order.currency)} • Completed ${escapeHtml(soldLabel)}
+              </p>
+            </div>
+            <span class="moderation-badge moderation-badge--approved">Sold</span>
+          </div>
+          <p class="submission-meta"><strong>Order ref:</strong> ${escapeHtml(orderRef || "N/A")}</p>
+          <p class="submission-meta"><strong>Buyer:</strong> ${escapeHtml(order.buyer_email || "N/A")}</p>
+        </article>`;
+      })
+      .join("");
+  }
+
   function initSellerPage() {
     const onboardingForm = $("onboarding-form");
     const checkStatusButton = $("check-status");
@@ -1168,6 +1302,8 @@
     const myListings = $("my-listings");
     const refreshSellerOffers = $("refresh-seller-offers");
     const sellerOffers = $("seller-offers");
+    const refreshSellerSales = $("refresh-seller-sales");
+    const sellerSales = $("seller-sales");
 
     if (
       !onboardingForm ||
@@ -1188,11 +1324,11 @@
     }
 
     if (state === "return") {
-      setStatus(onboardingState, "Onboarding returned. Check status to confirm activation.", "ok");
+      setStatus(onboardingState, "Verification submitted. Check status to confirm activation.", "ok");
     } else if (state === "refresh") {
       setStatus(
         onboardingState,
-        "Onboarding link expired before completion. Start again.",
+        "Verification session expired before completion. Please start again.",
         "error"
       );
     }
@@ -1221,6 +1357,7 @@
         }
         await loadSellerListings();
         await loadSellerOffers();
+        await loadSellerSales();
         return data;
       } catch (error) {
         setStatus(onboardingState, error.message || "Status check failed.", "error");
@@ -1232,7 +1369,7 @@
       const email = sellerEmail.value.trim().toLowerCase();
       if (!email || !myListings) return;
 
-      myListings.innerHTML = `<div class="submission-item">Loading your submissions...</div>`;
+      myListings.innerHTML = `<div class="submission-item">Loading your listings...</div>`;
 
       try {
         const query = new URLSearchParams({
@@ -1254,7 +1391,7 @@
       const email = sellerEmail.value.trim().toLowerCase();
       if (!email || !sellerOffers) return;
 
-      sellerOffers.innerHTML = `<div class="submission-item">Loading offers...</div>`;
+      sellerOffers.innerHTML = `<div class="submission-item">Loading offer inbox...</div>`;
 
       try {
         const data = await requestJson(
@@ -1268,7 +1405,25 @@
       }
     }
 
-    onboardingForm.addEventListener("submit", (event) => {
+    async function loadSellerSales() {
+      const email = sellerEmail.value.trim().toLowerCase();
+      if (!email || !sellerSales) return;
+
+      sellerSales.innerHTML = `<div class="submission-item">Loading recent sales...</div>`;
+
+      try {
+        const data = await requestJson(
+          `${API.orders}?seller_email=${encodeURIComponent(email)}&limit=40`
+        );
+        renderSellerSales(data.orders || [], sellerSales);
+      } catch (error) {
+        sellerSales.innerHTML = `<div class="submission-item">${escapeHtml(
+          error.message || "Could not load recent sales."
+        )}</div>`;
+      }
+    }
+
+    onboardingForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const email = sellerEmail.value.trim().toLowerCase();
       if (!email) {
@@ -1276,10 +1431,33 @@
         return;
       }
 
-      const url =
-        `${API.onboarding}?email=${encodeURIComponent(email)}&origin=` +
-        encodeURIComponent(window.location.origin);
-      window.location.href = url;
+      const submitButton = onboardingForm.querySelector('button[type="submit"]');
+      if (submitButton) submitButton.disabled = true;
+      setStatus(onboardingState, "Starting seller verification...", "");
+
+      try {
+        const data = await requestJson(API.onboarding, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            origin: window.location.origin,
+          }),
+        });
+
+        if (!data.url) {
+          throw new Error("Onboarding URL missing in API response.");
+        }
+        window.location.href = data.url;
+      } catch (error) {
+        setStatus(
+          onboardingState,
+          error.message || "Could not start seller verification. Please try again.",
+          "error"
+        );
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
     });
 
     checkStatusButton.addEventListener("click", () => {
@@ -1295,6 +1473,12 @@
     if (refreshSellerOffers) {
       refreshSellerOffers.addEventListener("click", () => {
         loadSellerOffers();
+      });
+    }
+
+    if (refreshSellerSales) {
+      refreshSellerSales.addEventListener("click", () => {
+        loadSellerSales();
       });
     }
 
@@ -1394,7 +1578,7 @@
           data && data.listing && data.listing.id ? data.listing.id.slice(0, 8).toUpperCase() : "";
         setStatus(
           listingState,
-          `Listing submitted${idSnippet ? ` (#${idSnippet})` : ""}. It is now pending moderation review.`,
+          `Listing submitted${idSnippet ? ` (#${idSnippet})` : ""}. It is now in moderation review.`,
           "ok"
         );
         listingForm.reset();
@@ -1408,6 +1592,7 @@
         renderMediaPreview(mediaPreview, []);
         await loadSellerListings();
         await loadSellerOffers();
+        await loadSellerSales();
       } catch (error) {
         setStatus(listingState, error.message || "Could not publish listing.", "error");
       } finally {
@@ -1462,6 +1647,7 @@
     if (sellerEmail.value.trim()) {
       loadSellerListings();
       loadSellerOffers();
+      loadSellerSales();
     }
     refreshPreviewFromInputs();
   }
@@ -1532,7 +1718,7 @@
     async function loadPendingQueue() {
       const token = getToken();
       if (!token) {
-        setStatus(authState, "Enter and save your admin token before loading queue.", "error");
+        setStatus(authState, "Enter and save your moderator token before loading the queue.", "error");
         return;
       }
 
@@ -1593,7 +1779,7 @@
         return;
       }
       window.localStorage.setItem("asm_admin_token", token);
-      setStatus(authState, "Admin token saved locally in this browser.", "ok");
+      setStatus(authState, "Moderator token saved locally in this browser.", "ok");
       loadPendingQueue();
     });
 
@@ -1626,6 +1812,7 @@
     }
   }
 
+  initInternalNavigationGuard();
   initAnnouncementBar();
 
   const pageType = document.body && document.body.dataset ? document.body.dataset.page : "";

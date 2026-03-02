@@ -12,7 +12,7 @@
       rel="stylesheet"
       href="https://archivesurmer.com/cdn/shop/t/4/assets/base.css?v=119947873405298954601765488852"
     />
-    <link rel="stylesheet" href="/marketplace.css" />
+    <link rel="stylesheet" href="marketplace.css" />
   </head>
   <body data-page="admin">
     <aside class="asm-announcement-bar">
@@ -24,11 +24,12 @@
     <header class="asm-header">
       <div class="container asm-header-inner">
         <nav class="asm-nav asm-nav-left">
-          <a href="/">Home</a>
-          <a href="/">Catalog</a>
-          <a href="/sell-with-us.html">Sell With Us</a>
+          <a href="index.html">Home</a>
+          <a href="index.html#discover">Catalog</a>
+          <a href="sell-with-us.html">Sell With Us</a>
+          <a href="about.html">About Us</a>
         </nav>
-        <a href="/" class="asm-logo-link" aria-label="Archive-sur-Mer home">
+        <a href="index.html" class="asm-logo-link" aria-label="Archive-sur-Mer home">
           <img
             class="asm-logo"
             src="https://archivesurmer.com/cdn/shop/files/IMG_4061.jpg?v=1759936258&width=1200"
@@ -36,7 +37,7 @@
           />
         </a>
         <nav class="asm-nav asm-nav-right">
-          <a href="/">Marketplace</a>
+          <a href="index.html">Marketplace</a>
           <span class="asm-currency">CHF</span>
         </nav>
       </div>
@@ -53,14 +54,14 @@
         <div class="asm-page-hero__overlay"></div>
         <div class="container asm-page-hero__content">
           <h1>Moderation Desk</h1>
-          <p>Review every submission before publication and maintain Archive sur Mer quality standards.</p>
+          <p>Review every submission before publication to protect Archive Sur Mer quality standards.</p>
         </div>
       </section>
 
       <div class="container seller-layout">
         <section class="panel">
-          <h2>1. Enter moderation token</h2>
-          <p>Use the same value set in <code>MARKETPLACE_ADMIN_TOKEN</code> on Vercel.</p>
+          <h2>1. Secure moderator access</h2>
+          <p>Use the same value configured as <code>MARKETPLACE_ADMIN_TOKEN</code> in Vercel.</p>
           <form id="admin-auth-form" class="stack">
             <label for="admin-token">Admin token</label>
             <input
@@ -79,7 +80,7 @@
           <div class="section-head">
             <div>
               <h2>2. Pending listing queue</h2>
-              <p>Approve to publish. Reject with reason to send back to seller.</p>
+              <p>Approve to publish. Reject with a clear reason to return the listing to the seller.</p>
             </div>
             <button id="refresh-admin-listings" class="button button--ghost" type="button">
               Refresh queue
@@ -102,12 +103,10 @@
       </div>
       <div class="container asm-footer-utilities">
         <p>&copy; 2026 Archive-sur-Mer Marketplace</p>
-        <a href="https://archivesurmer.com/policies/privacy-policy" target="_blank" rel="noreferrer noopener"
-          >Privacy policy</a
-        >
+        <a href="privacy.html">Privacy policy</a>
       </div>
     </footer>
 
-    <script src="/marketplace.js"></script>
+    <script src="marketplace.js"></script>
   </body>
 </html>

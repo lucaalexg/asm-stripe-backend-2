@@ -1,4 +1,47 @@
-const { getStripeClient, getSupabaseAdmin, readRawBody, sendJson, setCors } = require("./_shared");
+const {
+  getStripeClient,
+  getSupabaseAdmin,
+  isValidEmail,
+  readRawBody,
+  sendJson,
+  setCors,
+} = require("./_shared");
+
+function extractBuyerEmail(session) {
+  const raw =
+    (session.customer_details && session.customer_details.email) ||
+    session.customer_email ||
+    (session.metadata && (session.metadata.buyer_email || session.metadata.buyerEmail)) ||
+    "";
+  const email = String(raw || "")
+    .trim()
+    .toLowerCase();
+  return isValidEmail(email) ? email : null;
+}
+
+async function runSoldUpdate(supabase, basePayload, applyFilter) {
+  let query = supabase.from("listings").update(basePayload).in("status", ["active", "reserved"]);
+  query = applyFilter(query);
+  const result = await query;
+  if (!result.error) return result;
+
+  if (!basePayload.buyer_email || !/buyer_email/i.test(result.error.message || "")) {
+    throw result.error;
+  }
+
+  const fallbackPayload = { ...basePayload };
+  delete fallbackPayload.buyer_email;
+
+  let fallbackQuery = supabase
+    .from("listings")
+    .update(fallbackPayload)
+    .in("status", ["active", "reserved"]);
+  fallbackQuery = applyFilter(fallbackQuery);
+  const fallbackResult = await fallbackQuery;
+  if (fallbackResult.error) throw fallbackResult.error;
+
+  return fallbackResult;
+}
 
 async function markListingSold(supabase, session) {
   const listingId = session.metadata && session.metadata.listing_id;
@@ -7,29 +50,17 @@ async function markListingSold(supabase, session) {
     sold_at: new Date().toISOString(),
     checkout_session_id: session.id,
   };
+  const buyerEmail = extractBuyerEmail(session);
+  if (buyerEmail) {
+    updatePayload.buyer_email = buyerEmail;
+  }
 
   if (listingId) {
-    const soldResult = await supabase
-      .from("listings")
-      .update(updatePayload)
-      .eq("id", listingId)
-      .in("status", ["active", "reserved"]);
-
-    if (soldResult.error) {
-      throw soldResult.error;
-    }
+    await runSoldUpdate(supabase, updatePayload, (query) => query.eq("id", listingId));
     return;
   }
 
-  const fallbackResult = await supabase
-    .from("listings")
-    .update(updatePayload)
-    .eq("checkout_session_id", session.id)
-    .in("status", ["active", "reserved"]);
-
-  if (fallbackResult.error) {
-    throw fallbackResult.error;
-  }
+  await runSoldUpdate(supabase, updatePayload, (query) => query.eq("checkout_session_id", session.id));
 }
 
 async function releaseReservedListing(supabase, session) {

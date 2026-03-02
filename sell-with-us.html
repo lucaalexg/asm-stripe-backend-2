@@ -12,7 +12,7 @@
       rel="stylesheet"
       href="https://archivesurmer.com/cdn/shop/t/4/assets/base.css?v=119947873405298954601765488852"
     />
-    <link rel="stylesheet" href="/marketplace.css" />
+    <link rel="stylesheet" href="marketplace.css" />
   </head>
   <body data-page="seller">
     <aside class="asm-announcement-bar">
@@ -24,14 +24,12 @@
     <header class="asm-header">
       <div class="container asm-header-inner">
         <nav class="asm-nav asm-nav-left">
-          <a href="/">Home</a>
-          <a href="/">Catalog</a>
-          <a href="https://archivesurmer.com/blogs/news" target="_blank" rel="noreferrer noopener"
-            >About Us</a
-          >
-          <a href="/sell-with-us.html">Sell With Us</a>
+          <a href="index.html">Home</a>
+          <a href="index.html#discover">Catalog</a>
+          <a href="about.html">About Us</a>
+          <a href="sell-with-us.html">Sell With Us</a>
         </nav>
-        <a href="/" class="asm-logo-link" aria-label="Archive-sur-Mer home">
+        <a href="index.html" class="asm-logo-link" aria-label="Archive-sur-Mer home">
           <img
             class="asm-logo"
             src="https://archivesurmer.com/cdn/shop/files/IMG_4061.jpg?v=1759936258&width=1200"
@@ -39,7 +37,7 @@
           />
         </a>
         <nav class="asm-nav asm-nav-right">
-          <a href="/">Marketplace</a>
+          <a href="index.html">Marketplace</a>
           <span class="asm-currency">CHF</span>
         </nav>
       </div>
@@ -54,16 +52,14 @@
         <div class="asm-page-hero__overlay"></div>
         <div class="container asm-page-hero__content">
           <h1>Sell With Us</h1>
-          <p>
-            Seller area only. Buyer accounts are created in the marketplace with normal contact details.
-          </p>
+          <p>Seller operations only. Buyer registration is handled separately in the marketplace.</p>
         </div>
       </section>
 
       <div class="container seller-layout">
         <section class="panel">
           <h2>1. Seller verification and payout setup</h2>
-          <p>Every payout goes directly to your connected payout account.</p>
+          <p>Complete verification once to unlock compliant payouts on every successful order.</p>
           <form id="onboarding-form" class="stack">
             <label for="seller-email">Seller email</label>
             <input
@@ -83,7 +79,7 @@
 
         <section class="panel">
           <h2>2. Publish a listing</h2>
-          <p>Create a listing with rich media. Every submission is reviewed before going live.</p>
+          <p>Create premium listings with media-rich product details. Each submission is reviewed.</p>
           <form id="listing-form" class="stack">
             <label for="title">Title</label>
             <input id="title" name="title" required placeholder="Leather shoulder bag" />
@@ -152,7 +148,7 @@
           <div class="section-head">
             <div>
               <h2>3. My listing submissions</h2>
-              <p>Track moderation result and see whether a listing is approved, pending, or rejected.</p>
+              <p>Track moderation status and publication readiness in real time.</p>
             </div>
             <button id="refresh-my-listings" type="button" class="button button--ghost">Refresh</button>
           </div>
@@ -163,11 +159,22 @@
           <div class="section-head">
             <div>
               <h2>4. Offer inbox</h2>
-              <p>Review buyer offers and accept, reject, or counter directly.</p>
+              <p>Review incoming buyer offers and accept, reject, or counter directly.</p>
             </div>
             <button id="refresh-seller-offers" type="button" class="button button--ghost">Refresh</button>
           </div>
           <div id="seller-offers" class="submission-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h2>5. Recent sales</h2>
+              <p>Monitor completed orders and buyer contact references for post-sale support.</p>
+            </div>
+            <button id="refresh-seller-sales" type="button" class="button button--ghost">Refresh</button>
+          </div>
+          <div id="seller-sales" class="submission-list"></div>
         </section>
       </div>
     </main>
@@ -183,12 +190,10 @@
       </div>
       <div class="container asm-footer-utilities">
         <p>&copy; 2026 Archive-sur-Mer Marketplace</p>
-        <a href="https://archivesurmer.com/policies/privacy-policy" target="_blank" rel="noreferrer noopener"
-          >Privacy policy</a
-        >
+        <a href="privacy.html">Privacy policy</a>
       </div>
     </footer>
 
-    <script src="/marketplace.js"></script>
+    <script src="marketplace.js"></script>
   </body>
 </html>
