@@ -1,10 +1,13 @@
 :root {
-  --asm-text: #000000;
-  --asm-muted: rgba(0, 0, 0, 0.6);
-  --asm-border: #e6e6e6;
+  --asm-text: #111111;
+  --asm-muted: rgba(17, 17, 17, 0.55);
+  --asm-border: #e2e0dc;
   --asm-dark: #383838;
   --asm-danger: #a12d2d;
   --asm-ok: #1f6e45;
+  --asm-surface: #faf9f7;
+  --asm-surface-2: #f4f3f0;
+  --asm-font-heading: "New York", "Iowan Old Style", "Apple Garamond", Baskerville, "Times New Roman", Times, serif;
 .navbar {
     background-color: #ffffff;
     display: flex;
@@ -21,7 +24,7 @@
 
 body {
   margin: 0;
-  background: #fff;
+  background: var(--asm-surface);
   color: var(--asm-text);
   font-family: var(--font-body--family);
   line-height: var(--line-height--body-normal, 1.4);
@@ -37,6 +40,7 @@ h2,
 h3 {
   margin: 0;
   font-weight: 400;
+  font-family: var(--asm-font-heading);
   color: var(--asm-text);
 }
 
@@ -215,10 +219,11 @@ a {
 }
 
 .vc-trust-row {
-  padding-top: 14px;
+  padding: 14px 0 12px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+  margin-bottom: 12px;
 }
 
 .vc-trust-row h3 {
@@ -286,6 +291,76 @@ a {
 
 .asm-values .panel p {
   text-align: center;
+}
+
+/* ── Editorial statement block (position 9) ── */
+.vc-editorial-block {
+  padding: 40px 0 12px;
+}
+
+.vc-editorial-inner {
+  background: var(--asm-surface-2);
+  border: 1px solid var(--asm-border);
+  padding: 40px 48px;
+  display: grid;
+  gap: 16px;
+  text-align: center;
+  align-items: center;
+}
+
+.vc-editorial-inner h2 {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  line-height: 1.1;
+}
+
+.vc-editorial-inner p {
+  max-width: 560px;
+  margin: 0 auto;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.vc-editorial-inner .button-row {
+  justify-content: center;
+}
+
+/* ── Sell-with-us CTA band (position 10) ── */
+.vc-cta-band {
+  background: #111;
+  color: #fff;
+  margin-top: 12px;
+}
+
+.vc-cta-band-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 36px 0;
+}
+
+.vc-cta-band h2 {
+  color: #fff;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  margin-bottom: 6px;
+}
+
+.vc-cta-band p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9375rem;
+}
+
+.vc-cta-band .button {
+  background: #fff;
+  color: #111;
+  border-color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.vc-cta-band .button:hover {
+  background: var(--asm-surface);
+  border-color: var(--asm-surface);
 }
 
 .asm-footer {
@@ -813,6 +888,11 @@ textarea {
   .asm-footer-main {
     grid-template-columns: 1fr;
   }
+
+  .vc-cta-band-inner {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
 @media (max-width: 820px) {
@@ -859,6 +939,10 @@ textarea {
 
   .asm-footer-utilities {
     flex-direction: column;
+  }
+
+  .vc-editorial-inner {
+    padding: 28px 22px;
   }
 }
 
