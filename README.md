@@ -2,6 +2,61 @@
 
 Vestiaire-inspired marketplace backend + frontend for selling new and pre-owned designer-wear.
 
+---
+
+## ✅ Was läuft aktuell? (Current Status)
+
+All Phase 1 features are implemented and live.
+
+### API endpoints (Vercel serverless, all in `/api/`)
+
+| Route | Methods | Was macht es |
+|---|---|---|
+| `/api/start-onboarding` | GET, POST | Stripe Connect Express account erstellen / wiederverwenden, Onboarding-Link zurückgeben |
+| `/api/account-status` | GET, POST | Onboarding-Status eines Sellers abfragen (per Email oder `stripe_account_id`) |
+| `/api/listings` | GET, POST, PATCH | Marketplace-Inventar abrufen (Filter: Brand, Size, Condition, Preis, Suche), Listing anlegen, Status ändern |
+| `/api/customer-signup` | POST | Käufer-Profil anlegen / aktualisieren (Email, Telefon, Name) |
+| `/api/moderate-listings` | GET, POST | Admin-Moderationsqueue (pending → approved / rejected), mit Cloudinary-Weißhintergrund-Transform |
+| `/api/wishlist` | GET, POST, DELETE | Wishlist-Items speichern und entfernen |
+| `/api/saved-searches` | GET, POST, DELETE | Gespeicherte Suchfilter verwalten |
+| `/api/offers` | GET, POST, PATCH | Angebot erstellen, Gegenangebot, Ablehnen, Akzeptieren |
+| `/api/orders` | GET | Bestellhistorie für Käufer oder Verkäufer |
+| `/api/create-checkout-session` | POST | Stripe Checkout Session mit Connect-Auszahlung an Seller |
+| `/api/stripe-webhook` | POST | Webhook: Listing auf `sold` setzen / freigeben bei Payment-Events |
+| `/api/upload-image` | POST | Bild zu Cloudinary hochladen |
+| `/api/return` | GET | Statische Bestätigungsseite nach Stripe Connect Onboarding |
+
+### Frontend-Seiten
+
+| Seite | Beschreibung |
+|---|---|
+| `/` (`index.html`) | Buyer Marketplace: Listings, Filter, Wishlist, Offers, Order History, Checkout |
+| `/sell-with-us.html` | Seller Studio: Stripe Connect, Listing erstellen, Angebote verwalten |
+| `/admin-review.html` | Moderation Desk: Listings freigeben / ablehnen |
+| `/about.html` | Marken- und Qualitätsseite |
+| `/contact.html` | Kontaktseite |
+| `/privacy.html` | Datenschutzseite |
+| `/create-account.html` | Kundenkonto anlegen |
+
+### Infrastruktur
+
+- **Backend**: Vercel Serverless Functions (Node.js / CommonJS)
+- **Datenbank**: Supabase (PostgreSQL)
+- **Zahlungen**: Stripe Connect Express + Stripe Checkout
+- **Media**: Cloudinary (Upload + White-Background-Transform)
+
+### Was ist noch **nicht** live (Phase 2+)
+
+- Vollständige Authentifizierung / Session / RBAC
+- Order Lifecycle + Versand-Labels + Tracking
+- Returns / Disputes / Refunds Dashboard
+- Anti-Fraud / Risk Scoring
+- Messaging Center
+- Personalisierte Empfehlungen
+- Lokalisierung / Mehrwährung / Steuer-Matrix
+
+---
+
 This repository now includes:
 
 - Stripe Connect Express onboarding for sellers
@@ -175,6 +230,10 @@ Uploads image to Cloudinary:
   "folder": "archive-sur-mer/listings"
 }
 ```
+
+### `GET /api/return`
+
+Static HTML confirmation page served after Stripe Connect Express onboarding completes. Stripe redirects sellers here; the page shows a success message and links back to `/sell-with-us.html`.
 
 ---
 
