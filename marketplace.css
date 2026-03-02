@@ -123,6 +123,17 @@ a {
   font-size: 0.875rem;
 }
 
+.asm-lang-select,
+.asm-currency-select {
+  font-size: 0.875rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 2px 4px;
+  cursor: pointer;
+  color: inherit;
+}
+
 .vc-page {
   padding: 24px 0 40px;
 }

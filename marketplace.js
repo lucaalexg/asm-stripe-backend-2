@@ -137,9 +137,24 @@
     return payload;
   }
 
+  const SUPPORTED_CURRENCIES = ["eur", "chf", "usd", "gbp"];
+  const SUPPORTED_LANGUAGES = ["en", "de", "fr"];
+  const LOCALE_MAP = { en: "en-GB", de: "de-CH", fr: "fr-CH" };
+
+  function getStoredCurrency() {
+    const stored = String(window.localStorage.getItem("asm_currency") || "").toLowerCase();
+    return SUPPORTED_CURRENCIES.includes(stored) ? stored : "eur";
+  }
+
+  function getStoredLanguage() {
+    const stored = String(window.localStorage.getItem("asm_lang") || "").toLowerCase();
+    return SUPPORTED_LANGUAGES.includes(stored) ? stored : "en";
+  }
+
   function formatCurrency(priceCents, currencyCode = "eur") {
+    const locale = LOCALE_MAP[getStoredLanguage()] || "en-GB";
     try {
-      return new Intl.NumberFormat("en-GB", {
+      return new Intl.NumberFormat(locale, {
         style: "currency",
         currency: String(currencyCode).toUpperCase(),
       }).format((priceCents || 0) / 100);
@@ -154,6 +169,53 @@
       clearTimeout(timer);
       timer = setTimeout(() => fn(...args), delay);
     };
+  }
+
+  function initLanguageCurrencySwitcher() {
+    const langSelect = document.querySelector("[data-asm-lang-select]");
+    const currencySelect = document.querySelector("[data-asm-currency-select]");
+
+    const storedLang = getStoredLanguage();
+    const storedCurrency = getStoredCurrency();
+
+    if (document.documentElement) {
+      document.documentElement.lang = storedLang;
+    }
+
+    if (langSelect) {
+      langSelect.value = storedLang;
+      langSelect.addEventListener("change", () => {
+        const lang = SUPPORTED_LANGUAGES.includes(langSelect.value) ? langSelect.value : "en";
+        window.localStorage.setItem("asm_lang", lang);
+        if (document.documentElement) {
+          document.documentElement.lang = lang;
+        }
+        document.dispatchEvent(new CustomEvent("asm:locale-changed"));
+      });
+    }
+
+    if (currencySelect) {
+      currencySelect.value = storedCurrency;
+      currencySelect.addEventListener("change", () => {
+        const currency = SUPPORTED_CURRENCIES.includes(currencySelect.value)
+          ? currencySelect.value
+          : "eur";
+        window.localStorage.setItem("asm_currency", currency);
+        document.dispatchEvent(new CustomEvent("asm:locale-changed"));
+      });
+    }
+
+    // Update the price-label placeholders for currency-dependent filter labels
+    function updatePriceLabels() {
+      const currency = getStoredCurrency().toUpperCase();
+      document.querySelectorAll("[data-asm-price-label]").forEach((el) => {
+        const base = el.getAttribute("data-asm-price-label");
+        el.textContent = `${base} (${currency})`;
+      });
+    }
+
+    updatePriceLabels();
+    document.addEventListener("asm:locale-changed", updatePriceLabels);
   }
 
   function initAnnouncementBar() {
@@ -1136,6 +1198,10 @@
     applyStateToInputs();
     loadListings();
     refreshMemberData();
+
+    document.addEventListener("asm:locale-changed", () => {
+      loadListings();
+    });
   }
 
   function fileToDataUrl(file) {
@@ -1565,7 +1631,7 @@
           imageUrl: allImageUrls[0],
           images: allImageUrls,
           videoUrl: videoUrl ? videoUrl.value.trim() : "",
-          currency: "eur",
+          currency: getStoredCurrency(),
         };
 
         const data = await requestJson(API.listings, {
@@ -1814,6 +1880,7 @@
 
   initInternalNavigationGuard();
   initAnnouncementBar();
+  initLanguageCurrencySwitcher();
 
   const pageType = document.body && document.body.dataset ? document.body.dataset.page : "";
   if (pageType === "marketplace") {
