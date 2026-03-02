@@ -10,6 +10,31 @@ const {
   setCors,
 } = require("./_shared");
 
+async function createExpressSellerAccount(stripe, email) {
+  const account = await stripe.accounts.create({
+    type: "express",
+    email,
+    capabilities: {
+      card_payments: { requested: true },
+      transfers: { requested: true },
+    },
+    metadata: {
+      platform: "archive-sur-mer",
+    },
+  });
+  return account.id;
+}
+
+function shouldReplaceConnectedAccount(error) {
+  const message = String((error && error.message) || "").toLowerCase();
+  if (error && error.code === "resource_missing") return true;
+  return (
+    message.includes("custom") &&
+    message.includes("express") &&
+    message.includes("account link")
+  );
+}
+
 module.exports = async (req, res) => {
   setCors(res);
 
@@ -62,18 +87,7 @@ module.exports = async (req, res) => {
     let stripeAccountId = sellerResult.data ? sellerResult.data.stripe_account_id : null;
 
     if (!stripeAccountId) {
-      const account = await stripe.accounts.create({
-        type: "express",
-        email,
-        capabilities: {
-          card_payments: { requested: true },
-          transfers: { requested: true },
-        },
-        metadata: {
-          platform: "archive-sur-mer",
-        },
-      });
-      stripeAccountId = account.id;
+      stripeAccountId = await createExpressSellerAccount(stripe, email);
     }
 
     const upsertResult = await supabase
@@ -98,12 +112,39 @@ module.exports = async (req, res) => {
     const refreshUrl =
       `${publicOrigin}/sell-with-us.html?state=refresh&email=` + encodeURIComponent(email);
 
-    const accountLink = await stripe.accountLinks.create({
-      account: stripeAccountId,
-      type: "account_onboarding",
-      return_url: returnUrl,
-      refresh_url: refreshUrl,
-    });
+    let accountLink;
+    try {
+      accountLink = await stripe.accountLinks.create({
+        account: stripeAccountId,
+        type: "account_onboarding",
+        return_url: returnUrl,
+        refresh_url: refreshUrl,
+      });
+    } catch (linkError) {
+      if (!shouldReplaceConnectedAccount(linkError)) {
+        throw linkError;
+      }
+
+      // Recover automatically if the stored account is missing/incompatible for account links.
+      stripeAccountId = await createExpressSellerAccount(stripe, email);
+      const replaceResult = await supabase
+        .from("seller_profiles")
+        .update({
+          stripe_account_id: stripeAccountId,
+          onboarding_complete: false,
+        })
+        .eq("email", email);
+      if (replaceResult.error) {
+        throw replaceResult.error;
+      }
+
+      accountLink = await stripe.accountLinks.create({
+        account: stripeAccountId,
+        type: "account_onboarding",
+        return_url: returnUrl,
+        refresh_url: refreshUrl,
+      });
+    }
 
     if (req.method === "GET") {
       res.statusCode = 302;
@@ -115,7 +156,10 @@ module.exports = async (req, res) => {
     return sendJson(res, 200, {
       url: accountLink.url,
       stripe_account_id: stripeAccountId,
-      seller: upsertResult.data,
+      seller: {
+        ...upsertResult.data,
+        stripe_account_id: stripeAccountId,
+      },
     });
   } catch (error) {
     return sendJson(res, 500, {

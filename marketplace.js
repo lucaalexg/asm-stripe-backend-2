@@ -1423,7 +1423,7 @@
       }
     }
 
-    onboardingForm.addEventListener("submit", (event) => {
+    onboardingForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const email = sellerEmail.value.trim().toLowerCase();
       if (!email) {
@@ -1431,10 +1431,33 @@
         return;
       }
 
-      const url =
-        `${API.onboarding}?email=${encodeURIComponent(email)}&origin=` +
-        encodeURIComponent(window.location.origin);
-      window.location.href = url;
+      const submitButton = onboardingForm.querySelector('button[type="submit"]');
+      if (submitButton) submitButton.disabled = true;
+      setStatus(onboardingState, "Starting seller verification...", "");
+
+      try {
+        const data = await requestJson(API.onboarding, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            origin: window.location.origin,
+          }),
+        });
+
+        if (!data.url) {
+          throw new Error("Onboarding URL missing in API response.");
+        }
+        window.location.href = data.url;
+      } catch (error) {
+        setStatus(
+          onboardingState,
+          error.message || "Could not start seller verification. Please try again.",
+          "error"
+        );
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
     });
 
     checkStatusButton.addEventListener("click", () => {

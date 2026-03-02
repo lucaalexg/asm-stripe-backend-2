@@ -72,6 +72,7 @@ Creates or reuses seller Stripe Express account and returns/redirects to onboard
 
 - GET query: `email`, optional `origin`
 - POST JSON: `{ "email": "seller@example.com", "origin": "https://..." }`
+- If a stored connected account is missing or incompatible for account links, the endpoint auto-recovers by creating a fresh Express account and updating `seller_profiles`.
 
 ### `GET|POST /api/account-status`
 
