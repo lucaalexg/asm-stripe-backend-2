@@ -207,6 +207,9 @@ alter table if exists public.listings
 alter table if exists public.listings
   add column if not exists buyer_email text;
 
+alter table if exists public.listings
+  add column if not exists category text;
+
 do $$
 begin
   if not exists (
@@ -268,6 +271,9 @@ create index if not exists idx_listings_brand
 
 create index if not exists idx_listings_seller
   on public.listings (seller_id);
+
+create index if not exists idx_listings_category
+  on public.listings (category, created_at desc);
 
 create index if not exists idx_listings_buyer_email_status
   on public.listings (buyer_email, status, sold_at desc);

@@ -63,6 +63,17 @@ async function markListingSold(supabase, session) {
   await runSoldUpdate(supabase, updatePayload, (query) => query.eq("checkout_session_id", session.id));
 }
 
+async function expireOpenOffers(supabase, listingId) {
+  if (!listingId) return;
+  const nowIso = new Date().toISOString();
+  const expireResult = await supabase
+    .from("offers")
+    .update({ status: "expired", resolved_at: nowIso })
+    .eq("listing_id", listingId)
+    .in("status", ["pending", "countered"]);
+  if (expireResult.error) throw expireResult.error;
+}
+
 async function releaseReservedListing(supabase, session) {
   const listingId = session.metadata && session.metadata.listing_id;
 
@@ -111,7 +122,10 @@ module.exports = async (req, res) => {
     const event = stripe.webhooks.constructEvent(rawBody, signature, endpointSecret);
 
     if (event.type === "checkout.session.completed") {
-      await markListingSold(supabase, event.data.object);
+      const completedSession = event.data.object;
+      await markListingSold(supabase, completedSession);
+      const soldListingId = completedSession.metadata && completedSession.metadata.listing_id;
+      await expireOpenOffers(supabase, soldListingId);
     } else if (
       event.type === "checkout.session.expired" ||
       event.type === "checkout.session.async_payment_failed"

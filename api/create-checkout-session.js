@@ -66,6 +66,7 @@ module.exports = async (req, res) => {
     const listingId = sanitizeText(body.listingId || body.listing_id, 80);
     const buyerEmail = sanitizeText(body.buyerEmail || body.buyer_email, 160).toLowerCase();
     const explicitOrigin = sanitizeText(body.origin, 500);
+    const offerId = sanitizeText(body.offerId || body.offer_id, 90);
 
     if (!listingId) {
       return sendJson(res, 400, { error: "listingId is required." });
@@ -137,6 +138,46 @@ module.exports = async (req, res) => {
       });
     }
 
+    // Resolve checkout price: use accepted offer price if an offerId was provided.
+    let checkoutPriceCents = listing.price_cents;
+    if (offerId) {
+      const offerResult = await supabase
+        .from("offers")
+        .select("id, listing_id, customer_id, status, final_amount_cents, amount_cents")
+        .eq("id", offerId)
+        .maybeSingle();
+
+      if (offerResult.error && !isNoRowsError(offerResult.error)) throw offerResult.error;
+      if (!offerResult.data) {
+        return sendJson(res, 404, { error: "Offer not found." });
+      }
+
+      const offer = offerResult.data;
+      if (offer.listing_id !== listing.id) {
+        return sendJson(res, 400, { error: "Offer does not belong to this listing." });
+      }
+
+      if (offer.status !== "accepted") {
+        return sendJson(res, 409, { error: "Offer must be accepted before checkout." });
+      }
+
+      if (!buyerEmail) {
+        return sendJson(res, 400, { error: "buyerEmail is required when using an offerId." });
+      }
+
+      const customerResult = await supabase
+        .from("customer_profiles")
+        .select("id")
+        .eq("email", buyerEmail)
+        .maybeSingle();
+      if (customerResult.error && !isNoRowsError(customerResult.error)) throw customerResult.error;
+      if (!customerResult.data || customerResult.data.id !== offer.customer_id) {
+        return sendJson(res, 403, { error: "Buyer email does not match the offer customer." });
+      }
+
+      checkoutPriceCents = offer.final_amount_cents || offer.amount_cents;
+    }
+
     // Reserve first to avoid creating multiple active checkout sessions for one item.
     const reserveResult = await supabase
       .from("listings")
@@ -162,7 +203,7 @@ module.exports = async (req, res) => {
     const feePercent = Number.isFinite(feePercentEnv)
       ? Math.max(1, Math.min(feePercentEnv, 30))
       : 15;
-    const applicationFeeAmount = Math.round((listing.price_cents * feePercent) / 100);
+    const applicationFeeAmount = Math.round((checkoutPriceCents * feePercent) / 100);
 
     const fallbackSuccessUrl = `${publicOrigin}/?checkout=success&listing=${listing.id}`;
     const fallbackCancelUrl = `${publicOrigin}/?checkout=cancelled&listing=${listing.id}`;
@@ -192,6 +233,7 @@ module.exports = async (req, res) => {
       seller_id: sellerResult.data.id,
       platform: "archive-sur-mer",
       ...(buyerEmail ? { buyer_email: buyerEmail } : {}),
+      ...(offerId ? { offer_id: offerId } : {}),
     };
 
     const session = await stripe.checkout.sessions.create({
@@ -202,7 +244,7 @@ module.exports = async (req, res) => {
           quantity: 1,
           price_data: {
             currency: normalizeCurrency(listing.currency),
-            unit_amount: listing.price_cents,
+            unit_amount: checkoutPriceCents,
             product_data: productData,
           },
         },
