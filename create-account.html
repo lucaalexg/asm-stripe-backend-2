@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create Account | Archive Sur Mer Marketplace</title>
+    <meta
+      name="description"
+      content="Create your buyer account or connect your existing Archive Sur Mer account to track orders, offers, and saved searches."
+    />
+    <link
+      rel="stylesheet"
+      href="https://archivesurmer.com/cdn/shop/t/4/assets/base.css?v=119947873405298954601765488852"
+    />
+    <link rel="stylesheet" href="marketplace.css" />
+  </head>
+  <body data-page="info">
+    <aside class="asm-announcement-bar">
+      <div class="container">
+        <p class="asm-announcement-text" data-asm-announcement>Up To 80% Of The Retail Price</p>
+      </div>
+    </aside>
+
+    <header class="asm-header">
+      <div class="container asm-header-inner">
+        <nav class="asm-nav asm-nav-left">
+          <a href="index.html">Home</a>
+          <a href="index.html#discover">Catalog</a>
+          <a href="about.html">About Us</a>
+          <a href="sell-with-us.html">Sell With Us</a>
+        </nav>
+        <a href="index.html" class="asm-logo-link" aria-label="Archive-sur-Mer home">
+          <img
+            class="asm-logo"
+            src="https://archivesurmer.com/cdn/shop/files/IMG_4061.jpg?v=1759936258&width=1200"
+            alt="Archive-sur-Mer"
+          />
+        </a>
+        <nav class="asm-nav asm-nav-right">
+          <a href="create-account.html">Create Account</a>
+          <a href="contact.html">Contact</a>
+          <span class="asm-currency">CHF</span>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="asm-page-hero">
+        <img
+          src="https://archivesurmer.com/cdn/shop/files/IMG_4915.jpg?height=1359&v=1768567798"
+          alt="Archive Sur Mer member account"
+        />
+        <div class="asm-page-hero__overlay"></div>
+        <div class="container asm-page-hero__content">
+          <h1>Member Account</h1>
+          <p>Create a buyer account or connect your existing account to manage orders and offers.</p>
+        </div>
+      </section>
+
+      <div class="container seller-layout">
+        <section class="panel">
+          <h2>Create your buyer account</h2>
+          <p>Register once to save favourites, submit offers, and track your orders.</p>
+          <form id="customer-signup-form" class="stack" style="margin-top:14px">
+            <div>
+              <label for="customer-name">Full name (optional)</label>
+              <input id="customer-name" type="text" placeholder="Your name" />
+            </div>
+            <div>
+              <label for="customer-email">Email</label>
+              <input id="customer-email" type="email" required placeholder="you@example.com" />
+            </div>
+            <div>
+              <label for="customer-phone">Phone number (international)</label>
+              <input id="customer-phone" type="tel" required placeholder="+491751234567" />
+            </div>
+            <label class="checkbox-line">
+              <input id="customer-marketing" type="checkbox" />
+              <span>I want updates about new arrivals and drops.</span>
+            </label>
+            <div>
+              <button class="button" type="submit">Create buyer account</button>
+            </div>
+          </form>
+          <div id="customer-signup-status" class="status-line" aria-live="polite"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Connect your existing account</h2>
+          <p>Already registered? Enter your email to access your member dashboard.</p>
+          <form id="customer-context-form" class="stack" style="margin-top:14px">
+            <div>
+              <label for="customer-context-email">Customer email</label>
+              <input
+                id="customer-context-email"
+                type="email"
+                required
+                placeholder="you@example.com"
+              />
+            </div>
+            <div class="button-row">
+              <button class="button" type="submit">Connect account</button>
+              <button id="refresh-member-data" class="button button--ghost" type="button">
+                Refresh member data
+              </button>
+            </div>
+          </form>
+          <div id="customer-context-status" class="status-line" aria-live="polite"></div>
+
+          <div class="member-grid">
+            <section>
+              <h3>Wishlist</h3>
+              <div id="wishlist-items" class="member-list"></div>
+            </section>
+            <section>
+              <h3>My offers</h3>
+              <div id="offer-items" class="member-list"></div>
+            </section>
+            <section>
+              <h3>My orders</h3>
+              <div id="order-items" class="member-list"></div>
+            </section>
+            <section>
+              <h3>Saved searches</h3>
+              <div id="saved-search-items" class="member-list"></div>
+            </section>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="asm-footer">
+      <div class="container asm-footer-main">
+        <p>Receive exclusive offers and early access to new product drops.</p>
+        <form class="asm-newsletter-form" action="#">
+          <label for="account-newsletter-email" class="visually-hidden">Email</label>
+          <input id="account-newsletter-email" type="email" placeholder="Email address" />
+          <button type="button" class="button">Registrieren</button>
+        </form>
+      </div>
+      <div class="container asm-footer-utilities">
+        <p>&copy; 2026 Archive-sur-Mer Marketplace</p>
+        <a href="privacy.html">Privacy policy</a>
+      </div>
+    </footer>
+
+    <script src="marketplace.js"></script>
+  </body>
+</html>
