@@ -292,26 +292,22 @@
       )}'>
         ${media}
         ${mediaNavigation}
+        <button class="listing-card-save-overlay" type="button" aria-label="Save to wishlist" data-action="save" data-listing-id="${escapeHtml(listing.id)}">&#9825;</button>
       </div>
       <div class="listing-content">
         <p class="listing-brand">${brand}</p>
         <h3 class="listing-title">${title}</h3>
-        <p class="listing-meta">${condition} • ${size}</p>
+        <p class="listing-meta">${condition} &bull; ${size}</p>
         <p class="listing-price">${price}</p>
         ${videoLink}
         ${thumbs}
         <div class="listing-actions">
           <button class="button buy-button" data-action="buy" data-listing-id="${escapeHtml(listing.id)}">Buy now</button>
-          <div class="button-row">
-            <button class="button button--ghost buy-button" data-action="save" data-listing-id="${escapeHtml(
-              listing.id
-            )}">Save item</button>
-          </div>
           <div class="offer-row">
-            <input type="number" min="1" step="1" placeholder="Offer €" data-offer-input />
+            <input type="number" min="1" step="1" placeholder="Offer &euro;" data-offer-input />
             <button class="button button--ghost" data-action="offer" data-listing-id="${escapeHtml(
               listing.id
-            )}">Offer</button>
+            )}">Make offer</button>
           </div>
         </div>
       </div>
@@ -1136,6 +1132,38 @@
     applyStateToInputs();
     loadListings();
     refreshMemberData();
+
+    // Category sub-nav and category tile clicks: set brand search to category keyword
+    const catNav = document.querySelector(".asm-cat-nav");
+    const catGrid = document.querySelector(".vc-category-grid");
+
+    function handleCatClick(event) {
+      const anchor = event.target.closest("[data-chip-set], [data-cat-filter]");
+      if (!anchor) return;
+      event.preventDefault();
+
+      const catSet = anchor.getAttribute("data-chip-set") || anchor.getAttribute("data-cat-filter") || "";
+
+      // Update active state on sub-nav links
+      if (catNav) {
+        catNav.querySelectorAll("a").forEach((a) => a.classList.remove("active"));
+        const matchingLink = catNav.querySelector(`[data-chip-set="${catSet}"]`);
+        if (matchingLink) matchingLink.classList.add("active");
+      }
+
+      if (catSet === "all" || !catSet) {
+        state.search = "";
+      } else {
+        state.search = catSet;
+      }
+      applyStateToInputs();
+      loadListings();
+      const discoverEl = document.querySelector("#discover");
+      if (discoverEl) discoverEl.scrollIntoView({ behavior: "smooth" });
+    }
+
+    if (catNav) catNav.addEventListener("click", handleCatClick);
+    if (catGrid) catGrid.addEventListener("click", handleCatClick);
   }
 
   function fileToDataUrl(file) {
