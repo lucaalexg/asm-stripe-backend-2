@@ -171,7 +171,7 @@ module.exports = async (req, res) => {
         .eq("email", buyerEmail)
         .maybeSingle();
       if (customerResult.error && !isNoRowsError(customerResult.error)) throw customerResult.error;
-      if (!customerResult.data || customerResult.data.id !== offer.customer_id) {
+      if (!customerResult.data || !customerResult.data.id || customerResult.data.id !== offer.customer_id) {
         return sendJson(res, 403, { error: "Buyer email does not match the offer customer." });
       }
 
