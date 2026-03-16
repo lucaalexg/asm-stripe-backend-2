@@ -115,6 +115,7 @@ module.exports = async (req, res) => {
       const maxPriceCents = parsePriceFilter(getQueryParam(req, "max_price"));
       const moderationState =
         sanitizeText(getQueryParam(req, "moderation_status"), 20).toLowerCase() || "";
+      const category = sanitizeText(getQueryParam(req, "category"), 80);
       const sellerEmail = sanitizeText(getQueryParam(req, "seller_email"), 160).toLowerCase();
       const limit = clampInt(getQueryParam(req, "limit"), 1, 60, 24);
       const offset = clampInt(getQueryParam(req, "offset"), 0, 5000, 0);
@@ -160,10 +161,39 @@ module.exports = async (req, res) => {
         sellerId = sellerResult.data.id;
       }
 
+      // Single listing by ID
+      const singleId = sanitizeText(getQueryParam(req, "id"), 90);
+      if (singleId) {
+        const singleResult = await supabase
+          .from("listings")
+          .select(
+            "id, seller_id, title, brand, category, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at, sold_at"
+          )
+          .eq("id", singleId)
+          .maybeSingle();
+
+        if (singleResult.error && !isNoRowsError(singleResult.error)) {
+          throw singleResult.error;
+        }
+
+        if (!singleResult.data) {
+          return sendJson(res, 404, { error: "Listing not found." });
+        }
+
+        const single = singleResult.data;
+        // Enforce moderation visibility; sellers can see their own listing regardless of state
+        const isOwner = sellerId !== null && sellerId === single.seller_id;
+        if (!isOwner && single.moderation_status !== PUBLIC_MODERATION_STATE) {
+          return sendJson(res, 404, { error: "Listing not found." });
+        }
+
+        return sendJson(res, 200, { listing: formatListing(single) });
+      }
+
       let query = supabase
         .from("listings")
         .select(
-          "id, seller_id, title, brand, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at, sold_at"
+          "id, seller_id, title, brand, category, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at, sold_at"
         )
         .range(offset, offset + limit - 1);
 
@@ -222,6 +252,10 @@ module.exports = async (req, res) => {
         query = query.or(`title.ilike.%${search}%,brand.ilike.%${search}%`);
       }
 
+      if (category) {
+        query = query.eq("category", category);
+      }
+
       const listingResult = await query;
       if (listingResult.error) {
         throw listingResult.error;
@@ -239,6 +273,7 @@ module.exports = async (req, res) => {
       const sellerEmail = sanitizeText(body.sellerEmail || body.seller_email, 160).toLowerCase();
       const title = sanitizeText(body.title, 140);
       const brand = sanitizeText(body.brand, 80);
+      const category = sanitizeText(body.category, 80);
       const description = sanitizeText(body.description, 4000);
       const size = sanitizeText(body.size, 40);
       const condition = sanitizeText(body.condition, 60);
@@ -307,6 +342,7 @@ module.exports = async (req, res) => {
           seller_id: sellerResult.data.id,
           title,
           brand,
+          category: category || null,
           description,
           size: size || null,
           condition: condition || (isNew ? "New with tags" : "Pre-owned"),
@@ -323,7 +359,7 @@ module.exports = async (req, res) => {
           status: "active",
         })
         .select(
-          "id, seller_id, title, brand, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at, sold_at"
+          "id, seller_id, title, brand, category, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at, sold_at"
         )
         .single();
 
@@ -340,19 +376,99 @@ module.exports = async (req, res) => {
       const body = await readJsonBody(req);
 
       const listingId = sanitizeText(body.listingId || body.id, 80);
-      const status = sanitizeText(body.status, 20).toLowerCase();
       const sellerEmail = sanitizeText(body.sellerEmail || body.seller_email, 160).toLowerCase();
 
-      if (!listingId || !SELLER_STATUS_UPDATES.has(status)) {
-        return sendJson(res, 400, {
-          error: "listingId and valid status (active|archived) are required.",
-        });
+      if (!listingId) {
+        return sendJson(res, 400, { error: "listingId is required." });
       }
 
       if (!isValidEmail(sellerEmail)) {
         return sendJson(res, 400, {
           error: "Valid sellerEmail is required for updates.",
         });
+      }
+
+      const rawStatus = body.status !== undefined ? sanitizeText(body.status, 20).toLowerCase() : null;
+      if (rawStatus !== null && !SELLER_STATUS_UPDATES.has(rawStatus)) {
+        return sendJson(res, 400, {
+          error: "status must be one of: active, archived.",
+        });
+      }
+
+      const rawPrice = body.price_cents !== undefined ? body.price_cents : body.price;
+      let newPriceCents;
+      if (rawPrice !== undefined) {
+        newPriceCents = toPriceCents(rawPrice);
+        if (!Number.isInteger(newPriceCents) || newPriceCents <= 0) {
+          return sendJson(res, 400, { error: "price must be a positive number." });
+        }
+      }
+
+      const newTitle = body.title !== undefined ? sanitizeText(body.title, 140) : undefined;
+      const newBrand = body.brand !== undefined ? sanitizeText(body.brand, 80) : undefined;
+      const newCategory = body.category !== undefined
+        ? (sanitizeText(body.category, 60) || null)
+        : undefined;
+      const newDescription = body.description !== undefined
+        ? sanitizeText(body.description, 4000)
+        : undefined;
+      const newSize = body.size !== undefined ? (sanitizeText(body.size, 40) || null) : undefined;
+      const newCondition = body.condition !== undefined ? sanitizeText(body.condition, 60) : undefined;
+
+      if (newTitle !== undefined && !newTitle) {
+        return sendJson(res, 400, { error: "title cannot be empty." });
+      }
+      if (newBrand !== undefined && !newBrand) {
+        return sendJson(res, 400, { error: "brand cannot be empty." });
+      }
+      if (newCondition !== undefined && !newCondition) {
+        return sendJson(res, 400, { error: "condition cannot be empty." });
+      }
+      const rawVideoUrl = body.videoUrl !== undefined ? body.videoUrl : body.video_url;
+      const newVideoUrl = rawVideoUrl !== undefined ? (parseHttpUrl(rawVideoUrl) || null) : undefined;
+
+      const rawImages = body.images !== undefined
+        ? body.images
+        : body.imageUrls !== undefined
+          ? body.imageUrls
+          : body.media_urls;
+      let newMediaUrls;
+      let newImageUrl;
+      if (rawImages !== undefined) {
+        newMediaUrls = parseMediaUrls(Array.isArray(rawImages) ? rawImages : [rawImages]);
+        if (newMediaUrls.length === 0) {
+          return sendJson(res, 400, { error: "At least one valid image URL is required." });
+        }
+        newImageUrl = newMediaUrls[0];
+      } else if (body.imageUrl !== undefined || body.image_url !== undefined) {
+        const singleUrl = parseHttpUrl(body.imageUrl !== undefined ? body.imageUrl : body.image_url);
+        if (singleUrl) {
+          newImageUrl = singleUrl;
+          newMediaUrls = [singleUrl];
+        }
+      }
+
+      const updatePayload = {};
+      if (rawStatus !== null) updatePayload.status = rawStatus;
+      if (newPriceCents !== undefined) updatePayload.price_cents = newPriceCents;
+      if (newTitle !== undefined) updatePayload.title = newTitle;
+      if (newBrand !== undefined) updatePayload.brand = newBrand;
+      if (newCategory !== undefined) updatePayload.category = newCategory;
+      if (newDescription !== undefined) updatePayload.description = newDescription;
+      if (newSize !== undefined) updatePayload.size = newSize;
+      if (newCondition !== undefined) updatePayload.condition = newCondition;
+      if (newVideoUrl !== undefined) updatePayload.video_url = newVideoUrl;
+      if (newMediaUrls !== undefined) {
+        updatePayload.media_urls = newMediaUrls;
+        updatePayload.image_url = newImageUrl;
+        updatePayload.approved_media_urls = [];
+        updatePayload.moderation_status = "pending";
+        updatePayload.moderation_reason = null;
+        updatePayload.moderated_at = null;
+      }
+
+      if (Object.keys(updatePayload).length === 0) {
+        return sendJson(res, 400, { error: "No valid update fields provided." });
       }
 
       const sellerResult = await supabase
@@ -369,13 +485,36 @@ module.exports = async (req, res) => {
         return sendJson(res, 404, { error: "Seller not found." });
       }
 
+      const existingResult = await supabase
+        .from("listings")
+        .select("id, status")
+        .eq("id", listingId)
+        .eq("seller_id", sellerResult.data.id)
+        .maybeSingle();
+
+      if (existingResult.error && !isNoRowsError(existingResult.error)) {
+        throw existingResult.error;
+      }
+
+      if (!existingResult.data) {
+        return sendJson(res, 404, { error: "Listing not found for this seller." });
+      }
+
+      if (existingResult.data.status === "sold") {
+        return sendJson(res, 409, { error: "Sold listings cannot be edited." });
+      }
+
+      if (existingResult.data.status === "reserved" && "status" in updatePayload) {
+        return sendJson(res, 409, { error: "Cannot change the status of a reserved listing." });
+      }
+
       const updateResult = await supabase
         .from("listings")
-        .update({ status })
+        .update(updatePayload)
         .eq("id", listingId)
         .eq("seller_id", sellerResult.data.id)
         .select(
-          "id, seller_id, title, brand, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at, sold_at"
+          "id, seller_id, title, brand, category, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at, sold_at"
         )
         .maybeSingle();
 
@@ -384,14 +523,78 @@ module.exports = async (req, res) => {
       }
 
       if (!updateResult.data) {
-        return sendJson(res, 404, {
-          error: "Listing not found for this seller.",
-        });
+        return sendJson(res, 404, { error: "Listing not found for this seller." });
       }
 
       return sendJson(res, 200, {
         listing: formatListing(updateResult.data),
       });
+    }
+
+    if (req.method === "DELETE") {
+      const body = await readJsonBody(req);
+
+      const listingId = sanitizeText(body.listingId || body.id, 80);
+      const sellerEmail = sanitizeText(body.sellerEmail || body.seller_email, 160).toLowerCase();
+
+      if (!listingId) {
+        return sendJson(res, 400, { error: "listingId is required." });
+      }
+
+      if (!isValidEmail(sellerEmail)) {
+        return sendJson(res, 400, { error: "Valid sellerEmail is required." });
+      }
+
+      const sellerResult = await supabase
+        .from("seller_profiles")
+        .select("id")
+        .eq("email", sellerEmail)
+        .maybeSingle();
+
+      if (sellerResult.error && !isNoRowsError(sellerResult.error)) {
+        throw sellerResult.error;
+      }
+
+      if (!sellerResult.data) {
+        return sendJson(res, 404, { error: "Seller not found." });
+      }
+
+      const existingResult = await supabase
+        .from("listings")
+        .select("id, status")
+        .eq("id", listingId)
+        .eq("seller_id", sellerResult.data.id)
+        .maybeSingle();
+
+      if (existingResult.error && !isNoRowsError(existingResult.error)) {
+        throw existingResult.error;
+      }
+
+      if (!existingResult.data) {
+        return sendJson(res, 404, { error: "Listing not found for this seller." });
+      }
+
+      if (existingResult.data.status === "sold") {
+        return sendJson(res, 409, { error: "Sold listings cannot be deleted." });
+      }
+
+      if (existingResult.data.status === "reserved") {
+        return sendJson(res, 409, {
+          error: "Reserved listings cannot be deleted while a checkout is in progress.",
+        });
+      }
+
+      const deleteResult = await supabase
+        .from("listings")
+        .delete()
+        .eq("id", listingId)
+        .eq("seller_id", sellerResult.data.id);
+
+      if (deleteResult.error) {
+        throw deleteResult.error;
+      }
+
+      return sendJson(res, 200, { deleted: true, id: listingId });
     }
 
     return sendJson(res, 405, { error: "Method not allowed" });

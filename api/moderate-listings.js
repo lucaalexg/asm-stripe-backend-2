@@ -133,7 +133,7 @@ module.exports = async (req, res) => {
       let query = supabase
         .from("listings")
         .select(
-          "id, seller_id, title, brand, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at"
+          "id, seller_id, title, brand, category, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at"
         )
         .order("created_at", { ascending: false })
         .range(offset, offset + limit - 1);
@@ -240,7 +240,7 @@ module.exports = async (req, res) => {
       .update(updatePayload)
       .eq("id", listing.id)
       .select(
-        "id, seller_id, title, brand, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at"
+        "id, seller_id, title, brand, category, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, moderation_reason, moderated_at, status, created_at"
       )
       .single();
 

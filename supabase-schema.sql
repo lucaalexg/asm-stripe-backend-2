@@ -68,6 +68,7 @@ create table if not exists public.saved_searches (
   brand text,
   size text,
   condition text,
+  category text,
   min_price_cents integer,
   max_price_cents integer,
   sort_key text not null default 'newest',
@@ -99,6 +100,9 @@ alter table if exists public.saved_searches
 
 alter table if exists public.saved_searches
   add column if not exists notify_email boolean not null default true;
+
+alter table if exists public.saved_searches
+  add column if not exists category text;
 
 do $$
 begin
@@ -207,6 +211,9 @@ alter table if exists public.listings
 alter table if exists public.listings
   add column if not exists buyer_email text;
 
+alter table if exists public.listings
+  add column if not exists category text;
+
 do $$
 begin
   if not exists (
@@ -269,6 +276,9 @@ create index if not exists idx_listings_brand
 create index if not exists idx_listings_seller
   on public.listings (seller_id);
 
+create index if not exists idx_listings_category
+  on public.listings (category, created_at desc);
+
 create index if not exists idx_listings_buyer_email_status
   on public.listings (buyer_email, status, sold_at desc);
 
@@ -289,6 +299,9 @@ create index if not exists idx_wishlist_items_listing
 
 create index if not exists idx_saved_searches_customer
   on public.saved_searches (customer_id, created_at desc);
+
+create index if not exists idx_saved_searches_category
+  on public.saved_searches (category);
 
 create index if not exists idx_offers_listing
   on public.offers (listing_id, created_at desc);

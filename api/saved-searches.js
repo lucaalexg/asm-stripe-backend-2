@@ -83,7 +83,7 @@ module.exports = async (req, res) => {
       const result = await supabase
         .from("saved_searches")
         .select(
-          "id, customer_id, search_query, brand, size, condition, min_price_cents, max_price_cents, sort_key, notify_email, created_at, updated_at"
+          "id, customer_id, search_query, brand, size, condition, category, min_price_cents, max_price_cents, sort_key, notify_email, created_at, updated_at"
         )
         .eq("customer_id", customer.id)
         .order("created_at", { ascending: false })
@@ -122,6 +122,7 @@ module.exports = async (req, res) => {
     const brand = sanitizeText(body.brand, 80);
     const size = sanitizeText(body.size, 40);
     const condition = sanitizeText(body.condition, 40);
+    const category = sanitizeText(body.category, 60) || null;
     const sortKey = sanitizeText(body.sort || body.sort_key, 20).toLowerCase() || "newest";
     const notifyEmail = body.notify_email === undefined ? Boolean(body.notifyEmail !== false) : Boolean(body.notify_email);
     const minPriceCents = toOptionalPriceCents(body.min_price ?? body.minPrice ?? body.min_price_cents);
@@ -159,13 +160,14 @@ module.exports = async (req, res) => {
         brand: brand || null,
         size: size || null,
         condition: condition || null,
+        category: category || null,
         min_price_cents: minPriceCents,
         max_price_cents: maxPriceCents,
         sort_key: sortKey,
         notify_email: notifyEmail,
       })
       .select(
-        "id, customer_id, search_query, brand, size, condition, min_price_cents, max_price_cents, sort_key, notify_email, created_at, updated_at"
+        "id, customer_id, search_query, brand, size, condition, category, min_price_cents, max_price_cents, sort_key, notify_email, created_at, updated_at"
       )
       .single();
 

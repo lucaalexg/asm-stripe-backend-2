@@ -124,7 +124,7 @@ module.exports = async (req, res) => {
         const listingResult = await supabase
           .from("listings")
           .select(
-            "id, title, brand, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, status, created_at"
+            "id, title, brand, category, description, size, condition, is_new, price_cents, currency, image_url, media_urls, approved_media_urls, video_url, moderation_status, status, created_at"
           )
           .in("id", listingIds);
 
