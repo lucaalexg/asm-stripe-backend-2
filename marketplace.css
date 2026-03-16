@@ -7,7 +7,9 @@
   --asm-ok: #1f6e45;
   --asm-surface: #faf9f7;
   --asm-surface-2: #f4f3f0;
-  --asm-font-heading: "New York", "Iowan Old Style", "Apple Garamond", Baskerville, "Times New Roman", Times, serif;
+  --asm-font: "Cormorant Garamond", "Iowan Old Style", "Apple Garamond", Baskerville, "Times New Roman", Times, serif;
+  --asm-font-heading: var(--asm-font);
+}
 .navbar {
     background-color: #ffffff;
     display: flex;
@@ -26,8 +28,8 @@ body {
   margin: 0;
   background: var(--asm-surface);
   color: var(--asm-text);
-  font-family: var(--font-body--family);
-  line-height: var(--line-height--body-normal, 1.4);
+  font-family: var(--asm-font);
+  line-height: 1.5;
 }
 
 .container {
@@ -114,9 +116,29 @@ a {
   justify-content: center;
 }
 
-.asm-logo {
-  width: clamp(190px, 31vw, 452px);
+.asm-logo-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.asm-logo-icon {
+  width: clamp(44px, 5.5vw, 72px);
   height: auto;
+  display: block;
+}
+
+.asm-logo-text {
+  font-family: var(--asm-font);
+  font-size: clamp(0.85rem, 1.6vw, 1.35rem);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #111;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 .asm-currency {
