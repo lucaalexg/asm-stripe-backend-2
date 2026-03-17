@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 94" fill="none">
+  <!-- Safe outer body -->
+  <rect x="9" y="2" width="82" height="76" rx="4" stroke="#2d3f5a" stroke-width="1.8" fill="none"/>
+  <!-- Inner door frame -->
+  <rect x="16" y="9" width="68" height="62" rx="2" stroke="#2d3f5a" stroke-width="1.2" fill="none"/>
+  <!-- Combination dial outer ring -->
+  <circle cx="46" cy="39" r="17" stroke="#2d3f5a" stroke-width="1.4" fill="none"/>
+  <!-- Combination dial inner ring -->
+  <circle cx="46" cy="39" r="5" stroke="#2d3f5a" stroke-width="1.2" fill="none"/>
+  <!-- Dial spokes at 45° (NE/SE/SW/NW) from inner ring to outer ring -->
+  <line x1="49.5" y1="35.5" x2="57.5" y2="27.5" stroke="#2d3f5a" stroke-width="1.4"/>
+  <line x1="49.5" y1="42.5" x2="57.5" y2="50.5" stroke="#2d3f5a" stroke-width="1.4"/>
+  <line x1="42.5" y1="42.5" x2="34.5" y2="50.5" stroke="#2d3f5a" stroke-width="1.4"/>
+  <line x1="42.5" y1="35.5" x2="34.5" y2="27.5" stroke="#2d3f5a" stroke-width="1.4"/>
+  <!-- Handle knobs at spoke tips -->
+  <circle cx="58.6" cy="26.4" r="2" fill="#2d3f5a"/>
+  <circle cx="58.6" cy="51.6" r="2" fill="#2d3f5a"/>
+  <circle cx="33.4" cy="51.6" r="2" fill="#2d3f5a"/>
+  <circle cx="33.4" cy="26.4" r="2" fill="#2d3f5a"/>
+  <!-- Center pivot -->
+  <circle cx="46" cy="39" r="2" fill="#2d3f5a"/>
+  <!-- Door handle on right -->
+  <rect x="78" y="32" width="5" height="14" rx="2" stroke="#2d3f5a" stroke-width="1.2" fill="none"/>
+  <!-- Hinges on left side -->
+  <rect x="9" y="17" width="7" height="6" rx="1" fill="#2d3f5a"/>
+  <rect x="9" y="57" width="7" height="6" rx="1" fill="#2d3f5a"/>
+  <!-- Legs at bottom -->
+  <rect x="24" y="78" width="14" height="10" rx="2" stroke="#2d3f5a" stroke-width="1.4" fill="none"/>
+  <rect x="62" y="78" width="14" height="10" rx="2" stroke="#2d3f5a" stroke-width="1.4" fill="none"/>
+</svg>

@@ -1,13 +1,15 @@
 :root {
-  --asm-text: #111111;
-  --asm-muted: rgba(17, 17, 17, 0.55);
+  --asm-text: #2d3f5a;
+  --asm-muted: rgba(45, 63, 90, 0.55);
   --asm-border: #e2e0dc;
-  --asm-dark: #383838;
+  --asm-dark: #2d3f5a;
   --asm-danger: #a12d2d;
   --asm-ok: #1f6e45;
   --asm-surface: #faf9f7;
   --asm-surface-2: #f4f3f0;
-  --asm-font-heading: "New York", "Iowan Old Style", "Apple Garamond", Baskerville, "Times New Roman", Times, serif;
+  --asm-font: "Raleway", "Helvetica Neue", Arial, sans-serif;
+  --asm-font-heading: var(--asm-font);
+}
 .navbar {
     background-color: #ffffff;
     display: flex;
@@ -26,8 +28,8 @@ body {
   margin: 0;
   background: var(--asm-surface);
   color: var(--asm-text);
-  font-family: var(--font-body--family);
-  line-height: var(--line-height--body-normal, 1.4);
+  font-family: var(--asm-font);
+  line-height: 1.5;
 }
 
 .container {
@@ -73,11 +75,10 @@ a {
   top: 0;
   z-index: 50;
   background: #fff;
-  border-bottom: 1px solid var(--asm-border);
 }
 
 .asm-header-inner {
-  min-height: 86px;
+  min-height: 108px;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -102,7 +103,7 @@ a {
 
 .asm-nav a {
   text-decoration: none;
-  color: #000;
+  color: var(--asm-text);
 }
 
 .asm-nav a:hover {
@@ -112,11 +113,43 @@ a {
 .asm-logo-link {
   display: inline-flex;
   justify-content: center;
+  text-decoration: none;
 }
 
-.asm-logo {
-  width: clamp(190px, 31vw, 452px);
+.asm-logo-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.asm-logo-title {
+  font-family: var(--asm-font);
+  font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+  font-weight: 200;
+  letter-spacing: 0.28em;
+  color: var(--asm-text);
+  line-height: 1.15;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.asm-logo-subtitle {
+  font-family: var(--asm-font);
+  font-size: clamp(0.42rem, 0.85vw, 0.62rem);
+  font-weight: 300;
+  letter-spacing: 0.52em;
+  color: var(--asm-text);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  margin-bottom: 8px;
+}
+
+.asm-logo-icon {
+  width: clamp(38px, 4.8vw, 60px);
   height: auto;
+  display: block;
 }
 
 .asm-currency {
