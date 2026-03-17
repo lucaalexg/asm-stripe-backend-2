@@ -218,25 +218,6 @@
     document.addEventListener("asm:locale-changed", updatePriceLabels);
   }
 
-  function initAnnouncementBar() {
-    const announcement = document.querySelector("[data-asm-announcement]");
-    if (!announcement) return;
-
-    const messages = [
-      "Up To 80% Of The Retail Price",
-      "Free Shipping On Orders Over 200.-",
-      "100% Authenticity",
-      "Trusted by over 500 Customers",
-    ];
-    let index = messages.indexOf(announcement.textContent.trim());
-    if (index < 0) index = 0;
-
-    window.setInterval(() => {
-      index = (index + 1) % messages.length;
-      announcement.textContent = messages[index];
-    }, 3200);
-  }
-
   function resolveLegacyArchiveLink(hrefValue) {
     if (!hrefValue) return "";
 
@@ -1879,7 +1860,6 @@
   }
 
   initInternalNavigationGuard();
-  initAnnouncementBar();
   initLanguageCurrencySwitcher();
 
   const pageType = document.body && document.body.dataset ? document.body.dataset.page : "";
