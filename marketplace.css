@@ -55,21 +55,6 @@ a {
   color: inherit;
 }
 
-.asm-announcement-bar {
-  background: #000;
-  color: #fff;
-  border-bottom: 1px solid #000;
-}
-
-.asm-announcement-text {
-  margin: 0;
-  padding: 14px 0;
-  text-align: center;
-  font-size: 0.75rem;
-  line-height: 1;
-  font-style: italic;
-}
-
 .asm-header {
   position: sticky;
   top: 0;
