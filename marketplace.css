@@ -76,7 +76,7 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  align-items: center;
+  align-items: baseline;
   font-size: 0.75rem;
 }
 
@@ -137,21 +137,6 @@ a {
   width: clamp(38px, 4.8vw, 60px);
   height: auto;
   display: block;
-}
-
-.asm-currency {
-  font-size: 0.875rem;
-}
-
-.asm-lang-select,
-.asm-currency-select {
-  font-size: 0.875rem;
-  background: transparent;
-  border: 1px solid currentColor;
-  border-radius: 3px;
-  padding: 2px 4px;
-  cursor: pointer;
-  color: inherit;
 }
 
 .vc-page {
